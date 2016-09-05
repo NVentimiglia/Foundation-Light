@@ -60,6 +60,9 @@ namespace Foundation.Architecture
             Bind(parent);
         }
 
+        /// <summary>
+        /// For Chaining
+        /// </summary>
         public void Bind(Observable<T> parent) {
             UnBind();
             if (_parent != null)
@@ -69,6 +72,10 @@ namespace Foundation.Architecture
             }
         }
 
+
+        /// <summary>
+        /// For Chaining
+        /// </summary>
         void UnBind() {
             if (_parent != null) {
                 _parent.OnChange -= Set;
@@ -76,6 +83,9 @@ namespace Foundation.Architecture
             }
         }
 
+        /// <summary>
+        /// Clears it
+        /// </summary>
         public void Dispose()
         {
             UnBind();
