@@ -53,6 +53,8 @@
     <Compile Include="Logging\ConsoleLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Messaging\MessageBroker.cs" />
+    <Compile Include="Pooling\Pool.cs" />
+    <Compile Include="Pooling\PoolService.cs" />
     <Compile Include="Threading\IThreadingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Threading\AsyncLock.cs" />
