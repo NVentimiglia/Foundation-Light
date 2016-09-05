@@ -14,3 +14,7 @@ A Framework level library for client / server development. Built with MSN best p
   - Unified threading api with support for update loops, timers, and timeouts.
   - Optomized reflection helpers and caching.
   - Includes MVVM support with databinding, view factory, and a navigational services.
+
+
+## Injector
+[Injector : Service Locator / Inversion of control module](Injector.md) 

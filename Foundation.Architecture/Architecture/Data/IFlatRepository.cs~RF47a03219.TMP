@@ -1,0 +1,24 @@
+using System;
+
+namespace Foundation.Architecture
+{
+    /// <summary>
+    /// Player-prefs like file storage
+    /// </summary>
+    public interface IFlatRepository
+    {
+        bool Has(string key);
+
+        T Get<T>(string key);
+
+        T Get<T>(string key, T fallback);
+
+        T Get<T>(string key, Func<T> factory);
+
+        T Set<T>(string key, T value);
+
+        void Remove(string key);
+
+        void Clear();
+    }
+}

@@ -2,6 +2,7 @@ namespace Foundation.Architecture
 {
     public static class BufferExt
     {
+
         public static double ConvertBytesToMegabytes(long bytes)
         {
             return (bytes / 1024f) / 1024f;
