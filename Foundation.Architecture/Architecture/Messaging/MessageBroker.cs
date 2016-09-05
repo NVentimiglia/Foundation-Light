@@ -8,7 +8,8 @@ namespace Foundation.Architecture
     /// </summary>
     /// <remarks>
     /// I would like to avoid using this class.
-    /// Added due to 'DomainEvents' or a controller based routing mechanism.
+    /// I prefer simple events or or a controller based routing mechanism.
+    /// Added due to 'DomainEvents' 
     /// </remarks>
     /// <typeparam name="T"></typeparam>
     public static class MessageBroker<T>
