@@ -1,3 +1,4 @@
+// Nicholas Ventimiglia 2016-09-05
 using System;
 #if !UNITY
 using Newtonsoft.Json;

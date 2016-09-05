@@ -1,3 +1,4 @@
+// Nicholas Ventimiglia 2016-09-05
 namespace Foundation.Architecture
 {
     public static class BufferExt

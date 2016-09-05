@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿// Nicholas Ventimiglia 2016-09-05
+using System.Collections.Generic;
 
 namespace Foundation.Architecture
 {

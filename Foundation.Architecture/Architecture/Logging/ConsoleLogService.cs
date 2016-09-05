@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Nicholas Ventimiglia 2016-09-05
+using System;
 
 namespace Foundation.Architecture
 {

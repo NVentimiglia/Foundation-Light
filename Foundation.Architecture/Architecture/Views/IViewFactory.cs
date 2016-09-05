@@ -1,4 +1,5 @@
-﻿namespace Foundation.Architecture
+﻿// Nicholas Ventimiglia 2016-09-05
+namespace Foundation.Architecture
 {
     /// <summary>
     /// Utility for generating Views
