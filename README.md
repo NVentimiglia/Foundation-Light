@@ -2,7 +2,7 @@
 
 A Framework level library for client / server development. This solution has 4 projects.
 
-** WIP **
+**WIP**
 
 - **Architecture**
   - A library with common services and patterns that are shared on client and server. 
