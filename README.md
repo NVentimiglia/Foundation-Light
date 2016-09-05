@@ -2,7 +2,7 @@
 
 A Framework level library for client / server development. This solution has 4 projects.
 
-**WIP**
+**Work in progress**
 
 - **Architecture**
   - A library with common services and patterns that are shared on client and server. 
@@ -14,9 +14,11 @@ A Framework level library for client / server development. This solution has 4 p
 - **Models**
   - A library with common logical models and algorithms. 
   
-  
 - **Client**
   - Unit3d client implementation / example
   
 - **Server**
   - DotNetCore server implementation / example
+
+- **External Dependencies**
+  - Protobuff (client and server) and Json.Net (server only)
