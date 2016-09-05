@@ -53,6 +53,11 @@
     <Compile Include="Logging\ConsoleLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Messaging\MessageBroker.cs" />
+    <Compile Include="Observables\IPropertyChanged.cs" />
+    <Compile Include="Observables\ModelReflector.cs" />
+    <Compile Include="Observables\Observable.cs" />
+    <Compile Include="Observables\ObservableCollection.cs" />
+    <Compile Include="Observables\ObservableObject.cs" />
     <Compile Include="Pooling\IPoolService.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Pooling\PoolService.cs" />
