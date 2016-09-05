@@ -19,5 +19,9 @@ A Framework level library for client / server development. Built with MSN best p
   - Protobuff (client and server) and Json.Net (server only)
 
 - **Future Plans**
+  - Finnish Threading feature
+  - Add UnityTasks (Response wrapper with CustomYieldInstructions)
+  - RestAPIClient with Bearer Authentication
+  - Tests  
   - Example App
   - Networking Package with support for UDP, WebSockets, and MVC style routing.
