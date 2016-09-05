@@ -3,21 +3,12 @@ using System.Collections.Generic;
 
 namespace Foundation.Architecture.Misc
 {
-    /// <summary>
-    /// Pool Manager
-    /// </summary>
-    /// <remarks>
-    /// Thread Safe
-    /// </remarks>
-    public static class PoolService
+    public class PoolService : IPoolService
     {
-        static readonly Dictionary<Type, object> _pools = new Dictionary<Type, object>();
-        static readonly object _lock = new object();
+        private readonly Dictionary<Type, object> _pools = new Dictionary<Type, object>();
+        private readonly object _lock = new object();
 
-        /// <summary>
-        /// Returns an object to the correct pool
-        /// </summary>
-        public static T Rent<T>() where T : new()
+        public T Rent<T>() where T : new()
         {
             var t = typeof(T);
 
@@ -34,11 +25,7 @@ namespace Foundation.Architecture.Misc
             }
         }
 
-        /// <summary>
-        /// Returns an object to the correct pool
-        /// </summary>
-        /// <param name="item"></param>
-        public static void Return<T>(T item) where T : new()
+        public void Return<T>(T item) where T : new()
         {
             var t = typeof(T);
 
@@ -53,7 +40,6 @@ namespace Foundation.Architecture.Misc
                 _pools.Add(t, pool);
                 pool.Return(item);
             }
-
         }
     }
 }

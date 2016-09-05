@@ -11,11 +11,11 @@ namespace Foundation.Architecture
         public Action Callback { get; private set; }
         public bool IsRunning { get; private set; }
 
-        private IRoutineService service;
+        private IThreadingService service;
         private IDisposable routine;
         private double delta;
 
-        public RoutineTimer(TimeSpan interval, Action callback, IRoutineService service)
+        public RoutineTimer(TimeSpan interval, Action callback, IThreadingService service)
         {
             Callback = callback;
             Interval = interval;
