@@ -7,7 +7,7 @@ A Framework level library for client / server development. This solution has 4 p
 - **Architecture**
   - A library with common services and patterns that are shared on client and server. 
   - Includes the usual 'injector', 'messenger', 'logging'.
-  - Includes Helpers for unifing async logic on a dotnetcore server and a unity3d client. Timers / update managers.
+  - Includes components such as timers and update managers to keep shared logic consistent.
   - Includes MVVM support with databinding, view factory, and a navigational services.
   
   
