@@ -25,7 +25,7 @@ namespace Foundation.Architecture
         /// <summary>
         /// sends a message to subscriptions
         /// </summary>
-        public static void Receive(T message)
+        public static void Publish(T message)
         {
             OnMessage(message);
         }
@@ -74,7 +74,7 @@ namespace Foundation.Architecture
         /// </summary>
         public static void Publish<T>(T message)
         {
-            MessageBroker<T>.Receive(message);
+            MessageBroker<T>.Publish(message);
         }
     }
 }
