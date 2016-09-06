@@ -48,7 +48,7 @@
     <Compile Include="Logging\UnityLogService.cs" />
     <Compile Include="Messaging\MessageBroker.cs" />
     <Compile Include="Observables\IPropertyChanged.cs" />
-    <Compile Include="Observables\ModelReflector.cs" />
+    <Compile Include="Observables\ObservableProxy.cs" />
     <Compile Include="Observables\Observable.cs" />
     <Compile Include="Observables\ObservableBehaviour.cs" />
     <Compile Include="Observables\ObservableCollection.cs" />

@@ -1,5 +1,6 @@
 // Nicholas Ventimiglia 2016-09-05
 using System;
+using System.Collections;
 
 namespace Foundation.Architecture
 {
@@ -22,6 +23,18 @@ namespace Foundation.Architecture
         /// Registers a timeout
         /// </summary>
         IDisposable RunTimeout(Action<object> callback, object state, int intervalMs = 5000);
+
+        //
+        
+        /// <summary>
+        /// A Coroutine
+        /// </summary>
+        IDisposable RunRoutine(IEnumerator routine);
+
+        /// <summary>
+        /// A Coroutine
+        /// </summary>
+        IDisposable RunRoutine(Func<IEnumerator> routine);
 
         //
 

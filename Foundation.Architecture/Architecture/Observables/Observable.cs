@@ -11,7 +11,7 @@ namespace Foundation.Architecture
     {
         public event Action<T> OnChange = delegate { };
 
-        private Observable<T> _parent;   
+        private Observable<T> _parent;
 
         private T _value;
 
@@ -48,22 +48,31 @@ namespace Foundation.Architecture
             OnChange(value);
         }
 
-        public bool Equals(T other) {
+        public T Get()
+        {
+            return _value;
+        }
+
+        public bool Equals(T other)
+        {
             return _value.Equals(other);
         }
 
-        public Observable() {
-            
+        public Observable()
+        {
+
         }
 
-        public Observable(Observable<T> parent) {
+        public Observable(Observable<T> parent)
+        {
             Bind(parent);
         }
 
         /// <summary>
         /// For Chaining
         /// </summary>
-        public void Bind(Observable<T> parent) {
+        public void Bind(Observable<T> parent)
+        {
             UnBind();
             if (_parent != null)
             {
@@ -76,8 +85,10 @@ namespace Foundation.Architecture
         /// <summary>
         /// For Chaining
         /// </summary>
-        void UnBind() {
-            if (_parent != null) {
+        void UnBind()
+        {
+            if (_parent != null)
+            {
                 _parent.OnChange -= Set;
                 _parent = null;
             }
