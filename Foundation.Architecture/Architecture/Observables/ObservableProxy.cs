@@ -88,7 +88,7 @@ namespace Foundation.Architecture
                 }
 
                 var funct = _cacheSet[memberName];
-                
+
                 (funct as Action<T>).Invoke(value);
             }
             catch (Exception ex)
@@ -124,9 +124,7 @@ namespace Foundation.Architecture
             }
         }
 
-
         // 
-
 
         void BuildCache()
         {
@@ -138,8 +136,6 @@ namespace Foundation.Architecture
             CacheObservables();
         }
 
-     
-
         void CacheMethods()
         {
             var methods = InstanceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
@@ -148,10 +144,10 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name))
                 {
-                    UnityEngine.Debug.LogWarning("Duplicate member " + member.Name +  " on " + InstanceType.Name);
+                    UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
                     continue;
                 }
-                
+
                 var ptype = member.GetParameters();
 
                 // Note : Would be nice to invoke coroutines here, NV
@@ -180,7 +176,7 @@ namespace Foundation.Architecture
                     UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
                     continue;
                 }
-                
+
                 var get = Delegate.CreateDelegate(typeof(Func<object>), Instance, member.GetGetMethod());
                 _cacheGet.Add(member.Name, get);
 
