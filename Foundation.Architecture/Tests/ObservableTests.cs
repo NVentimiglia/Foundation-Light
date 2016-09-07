@@ -33,12 +33,12 @@ namespace Foundation.Architecture.Tests
             {
                 MyProperty = (value + _myProperty);
             }
-         
+
         }
-        
+
         [TestMethod]
         public void TestObservableObject()
-        { 
+        {
             var vm = new ViewModel();
             int counter = 0;
 
@@ -47,7 +47,7 @@ namespace Foundation.Architecture.Tests
                 Assert.AreEqual(name, "MyProperty");
                 counter++;
             };
-            
+
             vm.MyCommand();
             Assert.AreEqual(vm.MyProperty, 1);
 
@@ -130,14 +130,15 @@ namespace Foundation.Architecture.Tests
             var vm = new ViewModel();
             var proxy = new ObservableProxy(vm);
             var watch = new Stopwatch();
-            long test1 = long.MinValue;
+            long testNormal = long.MinValue;
             long testReflected = long.MinValue;
+            long testProxy = long.MinValue;
             long testInvoke = long.MinValue;
 
-            var invoke = (Action) Delegate.CreateDelegate(typeof(Action), vm, "MyCommand");
+            var invoke = (Action)Delegate.CreateDelegate(typeof(Action), vm, "MyCommand");
 
             //Dry run first before real test
-            for (int k = 0; k < 5; k++)
+            for (int k = 0;k < 5;k++)
             {
                 watch.Reset();
                 watch.Start();
@@ -146,7 +147,7 @@ namespace Foundation.Architecture.Tests
                     vm.MyCommand();
                 }
                 watch.Stop();
-                test1 = watch.ElapsedTicks;
+                testNormal = watch.ElapsedTicks;
 
                 watch.Reset();
                 watch.Start();
@@ -155,7 +156,7 @@ namespace Foundation.Architecture.Tests
                     proxy.Invoke("MyCommand");
                 }
                 watch.Stop();
-                testReflected = watch.ElapsedTicks;
+                testProxy = watch.ElapsedTicks;
 
 
                 watch.Reset();
@@ -166,10 +167,25 @@ namespace Foundation.Architecture.Tests
                 }
                 watch.Stop();
                 testInvoke = watch.ElapsedTicks;
+
+                watch.Reset();
+                watch.Start();
+                for (int i = 0;i < 1000;i++)
+                {
+                    vm.GetType().GetMethod("MyCommand").Invoke(vm, null);
+                }
+                watch.Stop();
+                testReflected = watch.ElapsedTicks;
             }
 
-            //Normal = 80 Reflected = 370 W/O Dictionary lookup 82
-            Console.WriteLine("Normal = "+ test1+" Reflected = "+testReflected +" W/O Dictionary lookup "+ testInvoke);
+            //Normal = 138
+            //Reflected = 1119
+            //Cached = 602
+            //Proxy = 602
+            Console.WriteLine("Normal = " + testNormal);
+            Console.WriteLine("Reflected = " + testReflected);
+            Console.WriteLine("Cached = " + testInvoke);
+            Console.WriteLine("Proxy = " + testProxy);
 
         }
     }
