@@ -13,46 +13,51 @@ namespace Foundation.Architecture
     public interface IThreadingService
     {
         /// <summary>
-        /// A long running update loop
+        /// A long running (continuous) update loop
         /// </summary>
-        IDisposable RunLoop(Action<double> callback);
-
-        /// <summary>
-        /// Registers a timeout
-        /// </summary>
-        IDisposable RunTimeout(Action callback, int intervalMs = 5000);
-
-        /// <summary>
-        /// Registers a timeout
-        /// </summary>
-        IDisposable RunTimeout(Action<object> callback, object state, int intervalMs = 5000);
-
-        /// <summary>
-        /// Registers a timeout
-        /// </summary>
-        IDisposable RunTimeout<TState>(Action<TState> callback, TState state, int intervalMs = 5000);
+        /// <param name="callback">Update Handler with delta time parameter</param>
+        /// <returns></returns>
+        IDisposable RunUpdate(Action<double> callback);
 
         //
 
         /// <summary>
-        /// A Coroutine
+        /// Registers a timeout (Wait and Invoke)
+        /// </summary>
+        IDisposable RunDelay(Action callback, int intervalMs = 5000);
+
+        /// <summary>
+        /// Registers a timeout (Wait and Invoke)
+        /// </summary>
+        IDisposable RunDelay(Action<object> callback, object state, int intervalMs = 5000);
+
+        /// <summary>
+        /// Registers a timeout (Wait and Invoke)
+        /// </summary>
+        IDisposable RunDelay<TState>(Action<TState> callback, TState state, int intervalMs = 5000);
+
+        //
+
+        /// <summary>
+        /// A Coroutine. Like an Update Loop, but, execution broken up by yields
         /// </summary>
         IDisposable RunRoutine(IEnumerator routine);
 
         /// <summary>
-        /// A Coroutine
+        /// A Coroutine. Like an Update Loop, but, execution broken up by yields
         /// </summary>
         IDisposable RunRoutine(Func<IEnumerator> routine);
 
         /// <summary>
-        /// A Coroutine
+        /// A Coroutine. Like an Update Loop, but, execution broken up by yields
         /// </summary>
         IDisposable RunRoutine(Func<object, IEnumerator> routine, object state);
 
         /// <summary>
-        /// A Coroutine
+        /// A Coroutine. Like an Update Loop, but, execution broken up by yields
         /// </summary>
         IDisposable RunRoutine<TState>(Func<TState, IEnumerator> routine, TState state);
+     
         //
 
         /// <summary>

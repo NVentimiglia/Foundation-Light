@@ -48,7 +48,7 @@ namespace Foundation.Architecture
             {
                 IsRunning = true;
 
-                routine = service.RunLoop(Handler);
+                routine = service.RunUpdate(Handler);
             }
 
             return this;
