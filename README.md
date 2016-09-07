@@ -6,11 +6,14 @@ A Framework level library for client / server development. Built with MSN best p
 
 - **Features**
   - Super light weight, take and use what you need.
-  - Cross compiles to run in Unity3d and DotNetCore.
+  - Unit tests for everything
+  - Cross compiles to run in Unity3d, .net45, and DotNetCore.
   - Injector for dependency lookup. Supports transient and singleton.
-  - Generic MessageBroker for relaying global or routed events internal to the app.
+  - MessageBroker for relaying messages globaly or by Object
   - Logging service for tracing out information and errors.
   - Pooling built-in, to lower GC pressure from messages.
+  - Observable framework with highly cached proxy layer for MVVM support
+  - Cross platform threading, timer, timeout, and coroutine helpers (TODO)
 
 
 [Injector : Service Locator / Inversion of control module](Injector.md) 
