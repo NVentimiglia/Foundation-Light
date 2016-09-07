@@ -24,8 +24,13 @@ namespace Foundation.Architecture
         /// </summary>
         IDisposable RunTimeout(Action<object> callback, object state, int intervalMs = 5000);
 
+        /// <summary>
+        /// Registers a timeout
+        /// </summary>
+        IDisposable RunTimeout<TState>(Action<TState> callback, TState state, int intervalMs = 5000);
+
         //
-        
+
         /// <summary>
         /// A Coroutine
         /// </summary>
@@ -36,6 +41,15 @@ namespace Foundation.Architecture
         /// </summary>
         IDisposable RunRoutine(Func<IEnumerator> routine);
 
+        /// <summary>
+        /// A Coroutine
+        /// </summary>
+        IDisposable RunRoutine(Func<object, IEnumerator> routine, object state);
+
+        /// <summary>
+        /// A Coroutine
+        /// </summary>
+        IDisposable RunRoutine<TState>(Func<TState, IEnumerator> routine, TState state);
         //
 
         /// <summary>
@@ -51,7 +65,7 @@ namespace Foundation.Architecture
         /// <summary>
         /// Executes an action on the main thread
         /// </summary>
-        void RunMainThread<T>(Action<T> action, T state);
+        void RunMainThread<TState>(Action<TState> action, TState state);
 
         //
 
@@ -68,6 +82,6 @@ namespace Foundation.Architecture
         /// <summary>
         /// Executes an action on the background thread (if possible - webGl)
         /// </summary>
-        void RunBackgroundThread<T>(Action<T> action, T state);
+        void RunBackgroundThread<TState>(Action<TState> action, TState state);
     }
 }

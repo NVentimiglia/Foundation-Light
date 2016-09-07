@@ -46,7 +46,8 @@
     <Compile Include="Injector\InjectService.cs" />
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Logging\UnityLogService.cs" />
-    <Compile Include="Messaging\MessageBroker.cs" />
+    <Compile Include="Messaging\DomainEvents.cs" />
+    <Compile Include="Messaging\ObjectEvents.cs" />
     <Compile Include="Observables\IPropertyChanged.cs" />
     <Compile Include="Observables\ObservableProxy.cs" />
     <Compile Include="Observables\Observable.cs" />
