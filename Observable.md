@@ -42,9 +42,10 @@ Reflection is heavy and costly. This class makes it better. As a bonus, acts as 
  - Supports Observable<> fields
  - Supports Non-IPropertyChanged and simple DTO's. (Those objects will be not raise change events, however)
  
- ## Metrics
- 
- here are my current stats for calling a method 1000 times. Time is in StopWatch ticks.
+
+## Metrics
+
+here are my current stats for calling a method 1000 times. Time is in StopWatch ticks.
  
  - Normal 81
  - Reflected 1088
