@@ -14,5 +14,6 @@ namespace Foundation.Architecture
     public interface IPropertyChanged
     {
         event PropertyChanged OnPropertyChanged;
+        void RaisePropertyChanged(string propertyName);
     }
 }

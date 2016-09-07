@@ -1,5 +1,4 @@
 // Nicholas Ventimiglia 2016-09-05
-
 using System;
 
 namespace Foundation.Architecture
@@ -14,24 +13,25 @@ namespace Foundation.Architecture
 
         public event Action<T> OnValueChange = delegate { };
 
-        private Observable<T> _parent;
+        private IPropertyChanged _parent;
+        private string _memberName;
 
         private T _value;
-
         public T Value
         {
-            get { return _value; }
-            set { Set(value); }
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                Set(value);
+            }
         }
 
         public static implicit operator T(Observable<T> observable)
         {
             return observable.Value;
-        }
-
-        public static implicit operator Observable<T>(T value)
-        {
-            return new Observable<T> {Value = value};
         }
 
         public void SetValueSilently(T value)
@@ -44,6 +44,11 @@ namespace Foundation.Architecture
             _value = value;
             OnValueChange(value);
             OnChange();
+
+            if (_parent != null)
+            {
+                _parent.RaisePropertyChanged(_memberName);
+            }
         }
 
         public T Get()
@@ -58,24 +63,24 @@ namespace Foundation.Architecture
 
         public Observable()
         {
-        }
 
-        public Observable(Observable<T> parent)
-        {
-            Bind(parent);
         }
 
         /// <summary>
         /// For Chaining
         /// </summary>
-        public void Bind(Observable<T> parent)
+        public Observable(string memberName, IPropertyChanged parent)
         {
-            UnBind();
-            if (_parent != null)
-            {
-                _parent = parent;
-                _parent.OnValueChange += Set;
-            }
+            Bind(memberName, parent);
+        }
+
+        /// <summary>
+        /// For Chaining
+        /// </summary>
+        public void Bind(string memberName, IPropertyChanged parent)
+        {
+            _parent = parent;
+            _memberName = memberName;
         }
 
 
@@ -84,11 +89,8 @@ namespace Foundation.Architecture
         /// </summary>
         void UnBind()
         {
-            if (_parent != null)
-            {
-                _parent.OnValueChange -= Set;
-                _parent = null;
-            }
+            _parent = null;
+            _memberName = null;
         }
 
         /// <summary>

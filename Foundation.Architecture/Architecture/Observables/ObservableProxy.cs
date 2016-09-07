@@ -17,6 +17,7 @@ namespace Foundation.Architecture
 
         public event PropertyChanged OnPropertyChanged = delegate { };
 
+
         //
 
         private Dictionary<string, Delegate> _cacheGet = new Dictionary<string, Delegate>();
@@ -31,7 +32,7 @@ namespace Foundation.Architecture
 
             if (Instance is IPropertyChanged)
             {
-                ((IPropertyChanged) Instance).OnPropertyChanged += PropogatePropertyChange;
+                ((IPropertyChanged)Instance).OnPropertyChanged += RaisePropertyChanged;
             }
 
             BuildCache();
@@ -43,7 +44,7 @@ namespace Foundation.Architecture
         {
             if (Instance is IPropertyChanged)
             {
-                ((IPropertyChanged) Instance).OnPropertyChanged -= PropogatePropertyChange;
+                ((IPropertyChanged)Instance).OnPropertyChanged -= RaisePropertyChanged;
             }
             Instance = null;
 
@@ -58,7 +59,6 @@ namespace Foundation.Architecture
             _cacheSet.Clear();
             _cacheObs.Clear();
         }
-
 
         /// <summary>
         /// Call a member
@@ -238,7 +238,7 @@ namespace Foundation.Architecture
 
                 var einfo = obs.GetType().GetEvent("OnChange");
 
-                Action handler = () => { PropogatePropertyChange(member.Name); };
+                Action handler = () => { RaisePropertyChanged(member.Name); };
 
                 einfo.AddEventHandler(obs, handler);
                 _cacheObs.Add(obs, handler);
@@ -246,7 +246,7 @@ namespace Foundation.Architecture
         }
 
 
-        void PropogatePropertyChange(string memberName)
+        public void RaisePropertyChanged(string memberName)
         {
             OnPropertyChanged(memberName);
         }

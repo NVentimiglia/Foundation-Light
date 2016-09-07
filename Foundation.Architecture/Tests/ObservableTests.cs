@@ -120,8 +120,37 @@ namespace Foundation.Architecture.Tests
 
             proxy.Dispose();
 
-            vm.MyObservable = 0;
+            vm.MyObservable.Value = 0;
             Assert.AreEqual(counter2, 4);
+        }
+
+
+        public class ViewModel2 : ObservableObject
+        {
+            public Observable<int> MyObservable;
+
+            public ViewModel2()
+            {
+                MyObservable = new Observable<int>("MyObservable", this);
+            }
+        }
+
+        [TestMethod]
+        public void TestObservableParenting()
+        {
+            var vm = new ViewModel2();
+            int counter1 = 0;
+
+            vm.OnPropertyChanged += (name) =>
+            {
+                counter1++;
+            };
+
+
+            vm.MyObservable.Value = 5;
+
+            Assert.AreEqual(vm.MyObservable, 5);
+            Assert.AreEqual(counter1, 1);
         }
 
         [TestMethod]
@@ -178,10 +207,10 @@ namespace Foundation.Architecture.Tests
                 testReflected = watch.ElapsedTicks;
             }
 
-            //Normal = 138
-            //Reflected = 1119
-            //Cached = 602
-            //Proxy = 602
+            //Normal = 81
+            //Reflected = 1088
+            //Cached = 82
+            //Proxy = 507
             Console.WriteLine("Normal = " + testNormal);
             Console.WriteLine("Reflected = " + testReflected);
             Console.WriteLine("Cached = " + testInvoke);
