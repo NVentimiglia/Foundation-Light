@@ -59,11 +59,6 @@ namespace Foundation.Architecture
             _cacheObs.Clear();
         }
 
-        void PropogatePropertyChange(string memberName)
-        {
-            OnPropertyChanged(memberName);
-        }
-
 
         /// <summary>
         /// Call a member
@@ -74,9 +69,9 @@ namespace Foundation.Architecture
             {
                 if (!_cacheGet.ContainsKey(memberName))
                 {
-#if UNITY
-                    UnityEngine.Debug.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
-#endif
+
+                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+
                     return default(T);
                 }
 
@@ -86,10 +81,10 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
-#if UNITY
-                UnityEngine.Debug.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with void");
-                UnityEngine.Debug.LogException(ex);
-#endif
+
+                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with void");
+                Logger.LogException(ex);
+
                 return default(T);
             }
         }
@@ -103,9 +98,9 @@ namespace Foundation.Architecture
             {
                 if (!_cacheSet.ContainsKey(memberName))
                 {
-#if UNITY
-                    UnityEngine.Debug.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
-#endif
+
+                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+
                     return;
                 }
 
@@ -115,10 +110,10 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
-#if UNITY
-                UnityEngine.Debug.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " + value.GetType().Name);
-                UnityEngine.Debug.LogException(ex);
-#endif
+
+                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " + value.GetType().Name);
+                Logger.LogException(ex);
+
             }
 
         }
@@ -133,9 +128,9 @@ namespace Foundation.Architecture
             {
                 if (!_cacheSet.ContainsKey(memberName))
                 {
-#if UNITY
-                    UnityEngine.Debug.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
-#endif
+
+                    Logger.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
+
                     return;
                 }
 
@@ -145,10 +140,10 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
-#if UNITY
-                UnityEngine.Debug.LogError("Failed to call member " + memberName + " of void " + " on " + InstanceType.Name);
-                UnityEngine.Debug.LogException(ex);
-#endif
+
+                Logger.LogError("Failed to call member " + memberName + " of void " + " on " + InstanceType.Name);
+                Logger.LogException(ex);
+
             }
         }
 
@@ -172,9 +167,9 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name))
                 {
-#if UNITY
-                    UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
-#endif
+
+                    Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+
                     continue;
                 }
 
@@ -205,9 +200,9 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
-#if UNITY
-                    UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
-#endif
+
+                    Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+
                     continue;
                 }
 
@@ -231,9 +226,9 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
-#if UNITY
-                    UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
-#endif
+
+                    Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+
                     continue;
                 }
 
@@ -258,6 +253,12 @@ namespace Foundation.Architecture
                 einfo.AddEventHandler(obs, handler);
                 _cacheObs.Add(obs, handler);
             }
+        }
+
+
+        void PropogatePropertyChange(string memberName)
+        {
+            OnPropertyChanged(memberName);
         }
     }
 }

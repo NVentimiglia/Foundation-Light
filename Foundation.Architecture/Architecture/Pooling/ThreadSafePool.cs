@@ -7,13 +7,18 @@ namespace Foundation.Architecture
     /// A very simple object pool
     /// </summary>
     /// <remarks>
-    /// Not thread safe
+    /// thread safe
     /// </remarks>
     /// <typeparam name="T"></typeparam>
-    public class Pool<T> where T : new()
+    public class ThreadSafePool<T> where T : new()
     {
-        
+        /// <summary>
+        /// Global Singleton
+        /// </summary>
+        public static readonly ThreadSafePool<T> Default = new ThreadSafePool<T>();
+
         private readonly Stack<T> _items = new Stack<T>();
+        private readonly object _lock = new object();
 
         /// <summary>
         /// Rents an item from the pool
@@ -21,8 +26,11 @@ namespace Foundation.Architecture
         /// <returns></returns>
         public T Rent()
         {
-            var result = _items.Count > 0 ? _items.Pop() : new T();
-            return result;
+            lock (_lock)
+            {
+                var result = _items.Count > 0 ? _items.Pop() : new T();
+                return result;
+            }
         }
 
         /// <summary>
@@ -31,7 +39,10 @@ namespace Foundation.Architecture
         /// <param name="item"></param>
         public void Return(T item)
         {
-            _items.Push(item);
+            lock (_lock)
+            {
+                _items.Push(item);
+            }
         }
 
         /// <summary>
@@ -39,7 +50,10 @@ namespace Foundation.Architecture
         /// </summary>
         public void Clear()
         {
-            _items.Clear();
+            lock (_lock)
+            {
+                _items.Clear();
+            }
         }
     }
 }

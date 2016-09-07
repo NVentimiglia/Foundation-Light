@@ -7,9 +7,14 @@ namespace Foundation.Architecture
     /// <summary>
     /// Unity implementation
     /// </summary>
-    public class UnityLogService : ILogService
+    public class Logger
     {
-        public void Log(LogModel model)
+        /// <summary>
+        ///  extensibility point
+        /// </summary>
+        public static event Action<LogModel> OnLog = delegate { };
+
+        public static void Log(LogModel model)
         {
             switch (model.Level)
             {
@@ -27,7 +32,7 @@ namespace Foundation.Architecture
             }
         }
 
-        public void Info(string message)
+        public static void Log(string message)
         {
             Log(new LogModel
             {
@@ -36,7 +41,7 @@ namespace Foundation.Architecture
             });
         }
 
-        public void Warning(string message)
+        public static void LogWarning(string message)
         {
             Log(new LogModel
             {
@@ -45,7 +50,7 @@ namespace Foundation.Architecture
             });
         }
 
-        public void Error(string message)
+        public static void LogError(string message)
         {
             Log(new LogModel
             {
@@ -54,7 +59,7 @@ namespace Foundation.Architecture
             });
         }
 
-        public void Error(Exception ex)
+        public static void LogException(Exception ex)
         {
             Log(new LogModel
             {
@@ -64,7 +69,7 @@ namespace Foundation.Architecture
             });
         }
 
-        public void Error(string message, Exception ex)
+        public static void LogException(string message, Exception ex)
         {
             Log(new LogModel
             {
