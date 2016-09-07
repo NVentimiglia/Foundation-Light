@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -50,10 +54,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="BufferTests.cs" />
+    <Compile Include="BufferHelperTests.cs" />
     <Compile Include="ObservableTests.cs" />
     <Compile Include="ObjectEventsTest.cs" />
     <Compile Include="DomainEventsTest.cs" />
+    <Compile Include="SerializerTests.cs" />
     <Compile Include="TestModels.cs" />
     <Compile Include="InjectorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +68,9 @@
       <Project>{f38f800f-d4d8-48e4-9a2c-b0518be831cb}</Project>
       <Name>Architecture</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

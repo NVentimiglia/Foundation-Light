@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Foundation.Architecture.Tests
 {
     [TestClass]
-    public class BufferTests
+    public class BufferHelperTests
     {
 
         [TestMethod]
@@ -25,7 +26,7 @@ namespace Foundation.Architecture.Tests
         {
             var buffer = new byte[sizeof(ushort)];
 
-            BufferHelper.Write(buffer, 0, (ushort) 69);
+            BufferHelper.Write(buffer, 0, (ushort)69);
 
             var val = BufferHelper.ReadUInt16(buffer, 0);
 
@@ -50,7 +51,7 @@ namespace Foundation.Architecture.Tests
         {
             var str = "Hello World BLAH BLAH";
 
-            var buffer = new byte[(sizeof(char)*str.Length) + sizeof(ushort)];
+            var buffer = new byte[(sizeof(char) * str.Length) + sizeof(ushort)];
 
             BufferHelper.Write(buffer, 0, str);
 
@@ -91,7 +92,7 @@ namespace Foundation.Architecture.Tests
 
                 BufferHelper.Write(buffer, 0, 69f);
                 BufferHelper.Write(buffer, sizeof(float), 69f);
-                
+
                 Assert.Fail("Should of Failed");
 
             }
