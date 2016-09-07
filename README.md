@@ -21,3 +21,5 @@ A Framework level library for client / server development. Built with MSN best p
 [Domain Events : Global Message Broker](DomainEvents.md) 
 
 [Object Events : Routed Message broker / SendMessage replacement](ObjectEvents.md) 
+
+[Observables : INotifyPropertyChange and MVVM](Observable.md) 
