@@ -67,17 +67,13 @@ namespace Foundation.Architecture
         {
             try
             {
-                if (!_cacheGet.ContainsKey(memberName))
+                Delegate temp;
+                if (_cacheGet.TryGetValue(memberName, out temp))
                 {
-                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " +
-                                      InstanceType.Name);
-
-                    return default(T);
+                    return (temp as Func<T>).Invoke();
                 }
-
-                var funct = _cacheGet[memberName];
-
-                return (funct as Func<T>).Invoke();
+                Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+                return default(T);
             }
             catch (Exception ex)
             {
@@ -95,22 +91,19 @@ namespace Foundation.Architecture
         {
             try
             {
-                if (!_cacheSet.ContainsKey(memberName))
+                Delegate temp;
+                if (_cacheSet.TryGetValue(memberName, out temp))
                 {
-                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " +
-                                      InstanceType.Name);
-
-                    return;
+                    (temp as Action<T>).Invoke(value);
                 }
-
-                var funct = _cacheSet[memberName];
-
-                (funct as Action<T>).Invoke(value);
+                else
+                {
+                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+                }
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " +
-                                value.GetType().Name);
+                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " +value.GetType().Name);
                 Logger.LogException(ex);
             }
         }
@@ -118,21 +111,19 @@ namespace Foundation.Architecture
         /// <summary>
         /// Call a member
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         public void Invoke(string memberName)
         {
             try
             {
-                if (!_cacheSet.ContainsKey(memberName))
+                Delegate temp;
+                if (_cacheSet.TryGetValue(memberName, out temp))
+                {
+                    (temp as Action).Invoke();
+                }
+                else
                 {
                     Logger.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
-
-                    return;
                 }
-
-                var funct = _cacheSet[memberName];
-
-                (funct as Action).Invoke();
             }
             catch (Exception ex)
             {
@@ -196,7 +187,6 @@ namespace Foundation.Architecture
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
                     Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
-
                     continue;
                 }
 
