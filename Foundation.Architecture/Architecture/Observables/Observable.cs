@@ -1,4 +1,5 @@
 // Nicholas Ventimiglia 2016-09-05
+
 using System;
 
 namespace Foundation.Architecture
@@ -19,14 +20,8 @@ namespace Foundation.Architecture
 
         public T Value
         {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                Set(value);
-            }
+            get { return _value; }
+            set { Set(value); }
         }
 
         public static implicit operator T(Observable<T> observable)
@@ -36,7 +31,7 @@ namespace Foundation.Architecture
 
         public static implicit operator Observable<T>(T value)
         {
-            return new Observable<T> { Value = value };
+            return new Observable<T> {Value = value};
         }
 
         public void SetValueSilently(T value)
@@ -63,7 +58,6 @@ namespace Foundation.Architecture
 
         public Observable()
         {
-
         }
 
         public Observable(Observable<T> parent)

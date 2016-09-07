@@ -1,4 +1,5 @@
-// Nicholas Ventimiglia 2016-09-05
+// Nicholas Ventimiglia 2016-09-06
+
 using System;
 using System.Collections.Generic;
 
@@ -108,14 +109,15 @@ namespace Foundation.Architecture
                 var func = Delegate.CreateDelegate(pType, info, "Publish");
                 inner.Add(messageType, func);
             }
-            
+
             (inner[messageType] as Action<object, object>).Invoke(route, message);
         }
 
         /// <summary>
         /// Notifies listeners of a new message
         /// </summary>
-        public static void Publish<TRoute, TMessage>(TRoute route, TMessage message) where TMessage : class where TRoute : class
+        public static void Publish<TRoute, TMessage>(TRoute route, TMessage message) where TMessage : class
+            where TRoute : class
         {
             ObjectEvents<TRoute, TMessage>.Publish(route, message);
         }

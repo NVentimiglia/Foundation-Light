@@ -1,4 +1,5 @@
 ﻿// Nicholas Ventimiglia 2016-09-05
+
 using System.Collections.Generic;
 
 namespace Foundation.Architecture
@@ -12,7 +13,6 @@ namespace Foundation.Architecture
     /// <typeparam name="T"></typeparam>
     public class Pool<T> where T : new()
     {
-        
         private readonly Stack<T> _items = new Stack<T>();
 
         /// <summary>

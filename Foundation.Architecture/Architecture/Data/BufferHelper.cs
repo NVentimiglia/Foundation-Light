@@ -1,4 +1,5 @@
 // Nicholas Ventimiglia 2016-09-05
+
 using System;
 using System.Text;
 
@@ -19,52 +20,57 @@ namespace Foundation.Architecture
             bool result;
             fixed (byte* ptr = buffer)
             {
-                result = *(bool*)(ptr + index);
+                result = *(bool*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe byte ReadByte(byte[] buffer, int index)
         {
             byte result;
             fixed (byte* ptr = buffer)
             {
-                result = *(byte*)(ptr + index);
+                result = *(byte*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe short ReadInt16(byte[] buffer, int index)
         {
             short result;
             fixed (byte* ptr = buffer)
             {
-                result = *(short*)(ptr + index);
+                result = *(short*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe ushort ReadUInt16(byte[] buffer, int index)
         {
             ushort result;
             fixed (byte* ptr = buffer)
             {
-                result = *(ushort*)(ptr + index);
+                result = *(ushort*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe int ReadInt32(byte[] buffer, int index)
         {
             int result;
             fixed (byte* ptr = buffer)
             {
-                result = *(int*)(ptr + index);
+                result = *(int*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe uint ReadUInt32(byte[] buffer, int index)
         {
             uint result;
             fixed (byte* ptr = buffer)
             {
-                result = *(uint*)(ptr + index);
+                result = *(uint*) (ptr + index);
             }
             return result;
         }
@@ -74,16 +80,17 @@ namespace Foundation.Architecture
             long result;
             fixed (byte* ptr = buffer)
             {
-                result = *(long*)(ptr + index);
+                result = *(long*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe ulong ReadUInt64(byte[] buffer, int index)
         {
             ulong result;
             fixed (byte* ptr = buffer)
             {
-                result = *(ulong*)(ptr + index);
+                result = *(ulong*) (ptr + index);
             }
             return result;
         }
@@ -93,28 +100,31 @@ namespace Foundation.Architecture
             double result;
             fixed (byte* ptr = buffer)
             {
-                result = *(double*)(ptr + index);
+                result = *(double*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe float ReadFloat(byte[] buffer, int index)
         {
             float result;
             fixed (byte* ptr = buffer)
             {
-                result = *(float*)(ptr + index);
+                result = *(float*) (ptr + index);
             }
             return result;
         }
+
         public static unsafe char ReadChar(byte[] buffer, int index)
         {
             char result;
             fixed (byte* ptr = buffer)
             {
-                result = *(char*)(ptr + index);
+                result = *(char*) (ptr + index);
             }
             return result;
         }
+
         public static string ReadString(byte[] buffer, int index)
         {
             //http://stackoverflow.com/questions/10773440/conversion-in-net-native-utf-8-managed-string
@@ -141,7 +151,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(bool*)(ptr + index) = value;
+                *(bool*) (ptr + index) = value;
             }
         }
 
@@ -149,7 +159,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(short*)(ptr + index) = value;
+                *(short*) (ptr + index) = value;
             }
         }
 
@@ -157,7 +167,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(ushort*)(ptr + index) = value;
+                *(ushort*) (ptr + index) = value;
             }
         }
 
@@ -165,7 +175,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(int*)(ptr + index) = value;
+                *(int*) (ptr + index) = value;
             }
         }
 
@@ -173,7 +183,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(uint*)(ptr + index) = value;
+                *(uint*) (ptr + index) = value;
             }
         }
 
@@ -181,7 +191,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(double*)(ptr + index) = value;
+                *(double*) (ptr + index) = value;
             }
         }
 
@@ -189,7 +199,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(long*)(ptr + index) = value;
+                *(long*) (ptr + index) = value;
             }
         }
 
@@ -197,7 +207,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(ulong*)(ptr + index) = value;
+                *(ulong*) (ptr + index) = value;
             }
         }
 
@@ -205,7 +215,7 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(float*)(ptr + index) = value;
+                *(float*) (ptr + index) = value;
             }
         }
 
@@ -213,14 +223,14 @@ namespace Foundation.Architecture
         {
             fixed (byte* ptr = buffer)
             {
-                *(char*)(ptr + index) = value;
+                *(char*) (ptr + index) = value;
             }
         }
 
         public static void Write(byte[] buffer, int index, string value)
         {
             var payload = Encoding.UTF8.GetBytes(value);
-            Write(buffer, index, (ushort)payload.Length);
+            Write(buffer, index, (ushort) payload.Length);
             Write(buffer, index + sizeof(ushort), payload, payload.Length);
         }
 

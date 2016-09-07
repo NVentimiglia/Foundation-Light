@@ -31,7 +31,7 @@ namespace Foundation.Architecture
 
             if (Instance is IPropertyChanged)
             {
-                ((IPropertyChanged)Instance).OnPropertyChanged += PropogatePropertyChange;
+                ((IPropertyChanged) Instance).OnPropertyChanged += PropogatePropertyChange;
             }
 
             BuildCache();
@@ -43,7 +43,7 @@ namespace Foundation.Architecture
         {
             if (Instance is IPropertyChanged)
             {
-                ((IPropertyChanged)Instance).OnPropertyChanged -= PropogatePropertyChange;
+                ((IPropertyChanged) Instance).OnPropertyChanged -= PropogatePropertyChange;
             }
             Instance = null;
 
@@ -69,8 +69,8 @@ namespace Foundation.Architecture
             {
                 if (!_cacheGet.ContainsKey(memberName))
                 {
-
-                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " +
+                                      InstanceType.Name);
 
                     return default(T);
                 }
@@ -81,7 +81,6 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
-
                 Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with void");
                 Logger.LogException(ex);
 
@@ -98,8 +97,8 @@ namespace Foundation.Architecture
             {
                 if (!_cacheSet.ContainsKey(memberName))
                 {
-
-                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " +
+                                      InstanceType.Name);
 
                     return;
                 }
@@ -110,12 +109,10 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
-
-                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " + value.GetType().Name);
+                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " +
+                                value.GetType().Name);
                 Logger.LogException(ex);
-
             }
-
         }
 
         /// <summary>
@@ -128,7 +125,6 @@ namespace Foundation.Architecture
             {
                 if (!_cacheSet.ContainsKey(memberName))
                 {
-
                     Logger.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
 
                     return;
@@ -140,10 +136,8 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
-
                 Logger.LogError("Failed to call member " + memberName + " of void " + " on " + InstanceType.Name);
                 Logger.LogException(ex);
-
             }
         }
 
@@ -161,13 +155,14 @@ namespace Foundation.Architecture
 
         void CacheMethods()
         {
-            var methods = InstanceType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance).Where(m => !m.IsSpecialName);
+            var methods =
+                InstanceType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+                    .Where(m => !m.IsSpecialName);
 
             foreach (var member in methods)
             {
                 if (_cacheSet.ContainsKey(member.Name))
                 {
-
                     Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
 
                     continue;
@@ -200,7 +195,6 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
-
                     Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
 
                     continue;
@@ -226,7 +220,6 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
-
                     Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
 
                     continue;
@@ -245,10 +238,7 @@ namespace Foundation.Architecture
 
                 var einfo = obs.GetType().GetEvent("OnChange");
 
-                Action handler = () =>
-                {
-                    PropogatePropertyChange(member.Name);
-                };
+                Action handler = () => { PropogatePropertyChange(member.Name); };
 
                 einfo.AddEventHandler(obs, handler);
                 _cacheObs.Add(obs, handler);

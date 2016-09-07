@@ -1,4 +1,5 @@
-// Nicholas Ventimiglia 2016-09-05
+// Nicholas Ventimiglia 2016-09-07
+
 using System;
 using System.Collections;
 
@@ -57,7 +58,7 @@ namespace Foundation.Architecture
         /// A Coroutine. Like an Update Loop, but, execution broken up by yields
         /// </summary>
         IDisposable RunRoutine<TState>(Func<TState, IEnumerator> routine, TState state);
-     
+
         //
 
         /// <summary>

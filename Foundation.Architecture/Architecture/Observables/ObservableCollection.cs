@@ -1,9 +1,12 @@
 // Nicholas Ventimiglia 2016-09-05
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 #if UNITY
 using UnityEngine;
+
 #endif
 
 namespace Foundation.Architecture
@@ -37,7 +40,6 @@ namespace Foundation.Architecture
 
         public ObservableCollection()
         {
-
         }
 
         public ObservableCollection(IEnumerable<T> set)
@@ -128,6 +130,6 @@ namespace Foundation.Architecture
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }  
+        }
     }
 }

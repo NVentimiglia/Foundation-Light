@@ -1,4 +1,5 @@
-// Nicholas Ventimiglia 2016-09-05
+// Nicholas Ventimiglia 2016-09-07
+
 using System;
 
 namespace Foundation.Architecture
@@ -56,7 +57,7 @@ namespace Foundation.Architecture
 
         void Handler(double d)
         {
-            if(!IsRunning)
+            if (!IsRunning)
                 return;
 
             delta += d;

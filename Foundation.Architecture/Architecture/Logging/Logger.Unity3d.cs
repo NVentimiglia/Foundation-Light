@@ -1,4 +1,5 @@
 ﻿// Nicholas Ventimiglia 2016-09-05
+
 using System;
 using UnityEngine;
 
@@ -23,13 +24,15 @@ namespace Foundation.Architecture
                     break;
                 case LogLevel.Error:
                     Debug.LogError(model.Message);
-                    if(model.Exception != null)
+                    if (model.Exception != null)
                         Debug.LogException(model.Exception);
                     break;
                 case LogLevel.Warning:
                     Debug.LogWarning(model.Message);
                     break;
             }
+
+            OnLog(model);
         }
 
         public static void Log(string message)

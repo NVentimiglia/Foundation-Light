@@ -1,3 +1,5 @@
+// Nicholas Ventimiglia 2016-09-05
+
 using UnityEngine;
 
 namespace Foundation.Architecture
@@ -8,7 +10,7 @@ namespace Foundation.Architecture
     public class ObservableBehaviour : MonoBehaviour, IPropertyChanged
     {
         public event PropertyChanged OnPropertyChanged = delegate { };
-        
+
         public virtual void RaisePropertyChanged(string propertyName)
         {
             OnPropertyChanged(propertyName);

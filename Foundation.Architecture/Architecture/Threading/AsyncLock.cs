@@ -1,4 +1,5 @@
-// Nicholas Ventimiglia 2016-09-05
+// Nicholas Ventimiglia 2016-09-07
+
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,9 +24,9 @@ namespace Foundation.Architecture
         public Task<Releaser> LockAsync()
         {
             var wait = m_semaphore.WaitAsync();
-            return wait.IsCompleted ?
-                m_releaser :
-                wait.ContinueWith((_, state) => new Releaser((AsyncLock)state),
+            return wait.IsCompleted
+                ? m_releaser
+                : wait.ContinueWith((_, state) => new Releaser((AsyncLock) state),
                     this, CancellationToken.None,
                     TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
@@ -34,7 +35,10 @@ namespace Foundation.Architecture
         {
             private readonly AsyncLock m_toRelease;
 
-            internal Releaser(AsyncLock toRelease) { m_toRelease = toRelease; }
+            internal Releaser(AsyncLock toRelease)
+            {
+                m_toRelease = toRelease;
+            }
 
             public void Dispose()
             {
