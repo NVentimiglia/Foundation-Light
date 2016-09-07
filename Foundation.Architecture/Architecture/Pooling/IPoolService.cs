@@ -1,5 +1,5 @@
 // Nicholas Ventimiglia 2016-09-05
-namespace Foundation.Architecture.Misc
+namespace Foundation.Architecture
 {
     /// <summary>
     /// Pool Manager for CLR objects
@@ -10,14 +10,18 @@ namespace Foundation.Architecture.Misc
     public interface IPoolService
     {
         /// <summary>
-        /// Returns an object to the correct pool
+        /// Get the pool
         /// </summary>
-        T Rent<T>() where T : new();
+        Pool<TObject> GetPool<TObject>() where TObject : new();
 
         /// <summary>
         /// Returns an object to the correct pool
         /// </summary>
-        /// <param name="item"></param>
-        void Return<T>(T item) where T : new();
+        TObject Rent<TObject>() where TObject : new();
+
+        /// <summary>
+        /// Returns an object to the correct pool
+        /// </summary>
+        void Return<TObject>(TObject item) where TObject : new();
     }
 }

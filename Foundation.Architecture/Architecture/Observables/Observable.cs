@@ -9,7 +9,9 @@ namespace Foundation.Architecture
     /// <typeparam name="T"></typeparam>
     public class Observable<T> : IEquatable<T>, IDisposable
     {
-        public event Action<T> OnChange = delegate { };
+        public event Action OnChange = delegate { };
+
+        public event Action<T> OnValueChange = delegate { };
 
         private Observable<T> _parent;
 
@@ -45,7 +47,8 @@ namespace Foundation.Architecture
         public void Set(T value)
         {
             _value = value;
-            OnChange(value);
+            OnValueChange(value);
+            OnChange();
         }
 
         public T Get()
@@ -77,7 +80,7 @@ namespace Foundation.Architecture
             if (_parent != null)
             {
                 _parent = parent;
-                _parent.OnChange += Set;
+                _parent.OnValueChange += Set;
             }
         }
 
@@ -89,7 +92,7 @@ namespace Foundation.Architecture
         {
             if (_parent != null)
             {
-                _parent.OnChange -= Set;
+                _parent.OnValueChange -= Set;
                 _parent = null;
             }
         }

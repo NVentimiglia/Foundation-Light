@@ -2,42 +2,59 @@
 using System;
 using System.Collections.Generic;
 
-namespace Foundation.Architecture.Misc
+namespace Foundation.Architecture
 {
     public class PoolService : IPoolService
     {
         private readonly Dictionary<Type, object> _pools = new Dictionary<Type, object>();
         private readonly object _lock = new object();
 
-        public T Rent<T>() where T : new()
+        public Pool<TObject> GetPool<TObject>() where TObject : new()
         {
-            var t = typeof(T);
+            var t = typeof(TObject);
 
             lock (_lock)
             {
                 if (_pools.ContainsKey(t))
                 {
-                    return (_pools[t] as Pool<T>).Rent();
+                    return _pools[t] as Pool<TObject>;
                 }
 
-                var pool = Activator.CreateInstance<Pool<T>>();
+                var pool = Activator.CreateInstance<Pool<TObject>>();
+                _pools.Add(t, pool);
+                return pool;
+            }
+        }
+
+        public TObject Rent<TObject>() where TObject : new()
+        {
+            var t = typeof(TObject);
+
+            lock (_lock)
+            {
+                if (_pools.ContainsKey(t))
+                {
+                    return (_pools[t] as Pool<TObject>).Rent();
+                }
+
+                var pool = Activator.CreateInstance<Pool<TObject>>();
                 _pools.Add(t, pool);
                 return pool.Rent();
             }
         }
 
-        public void Return<T>(T item) where T : new()
+        public void Return<TObject>(TObject item) where TObject : new()
         {
-            var t = typeof(T);
+            var t = typeof(TObject);
 
             lock (_lock)
             {
                 if (_pools.ContainsKey(t))
                 {
-                    (_pools[t] as Pool<T>).Return(item);
+                    (_pools[t] as Pool<TObject>).Return(item);
                 }
 
-                var pool = Activator.CreateInstance<Pool<T>>();
+                var pool = Activator.CreateInstance<Pool<TObject>>();
                 _pools.Add(t, pool);
                 pool.Return(item);
             }

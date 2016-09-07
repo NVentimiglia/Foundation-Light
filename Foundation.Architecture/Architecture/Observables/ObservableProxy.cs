@@ -21,6 +21,7 @@ namespace Foundation.Architecture
 
         private Dictionary<string, Delegate> _cacheGet = new Dictionary<string, Delegate>();
         private Dictionary<string, Delegate> _cacheSet = new Dictionary<string, Delegate>();
+        private Dictionary<object, Action> _cacheObs = new Dictionary<object, Action>();
 
         //
 
@@ -30,7 +31,7 @@ namespace Foundation.Architecture
 
             if (Instance is IPropertyChanged)
             {
-                ((IPropertyChanged)Instance).OnPropertyChanged += OnPropertyChanged;
+                ((IPropertyChanged)Instance).OnPropertyChanged += PropogatePropertyChange;
             }
 
             BuildCache();
@@ -42,12 +43,27 @@ namespace Foundation.Architecture
         {
             if (Instance is IPropertyChanged)
             {
-                ((IPropertyChanged)Instance).OnPropertyChanged -= OnPropertyChanged;
+                ((IPropertyChanged)Instance).OnPropertyChanged -= PropogatePropertyChange;
             }
             Instance = null;
+
+
+            foreach (var cacheOb in _cacheObs)
+            {
+                var einfo = cacheOb.Key.GetType().GetEvent("OnChange");
+                einfo.RemoveEventHandler(cacheOb.Key, cacheOb.Value);
+            }
+
             _cacheGet.Clear();
             _cacheSet.Clear();
+            _cacheObs.Clear();
         }
+
+        void PropogatePropertyChange(string memberName)
+        {
+            OnPropertyChanged(memberName);
+        }
+
 
         /// <summary>
         /// Call a member
@@ -58,7 +74,9 @@ namespace Foundation.Architecture
             {
                 if (!_cacheGet.ContainsKey(memberName))
                 {
+#if UNITY
                     UnityEngine.Debug.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+#endif
                     return default(T);
                 }
 
@@ -68,8 +86,10 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
+#if UNITY
                 UnityEngine.Debug.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with void");
                 UnityEngine.Debug.LogException(ex);
+#endif
                 return default(T);
             }
         }
@@ -83,7 +103,9 @@ namespace Foundation.Architecture
             {
                 if (!_cacheSet.ContainsKey(memberName))
                 {
+#if UNITY
                     UnityEngine.Debug.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+#endif
                     return;
                 }
 
@@ -93,8 +115,10 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
+#if UNITY
                 UnityEngine.Debug.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " + value.GetType().Name);
                 UnityEngine.Debug.LogException(ex);
+#endif
             }
 
         }
@@ -109,7 +133,9 @@ namespace Foundation.Architecture
             {
                 if (!_cacheSet.ContainsKey(memberName))
                 {
+#if UNITY
                     UnityEngine.Debug.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
+#endif
                     return;
                 }
 
@@ -119,8 +145,10 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
+#if UNITY
                 UnityEngine.Debug.LogError("Failed to call member " + memberName + " of void " + " on " + InstanceType.Name);
                 UnityEngine.Debug.LogException(ex);
+#endif
             }
         }
 
@@ -138,15 +166,18 @@ namespace Foundation.Architecture
 
         void CacheMethods()
         {
-            var methods = InstanceType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+            var methods = InstanceType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance).Where(m => !m.IsSpecialName);
 
             foreach (var member in methods)
             {
                 if (_cacheSet.ContainsKey(member.Name))
                 {
+#if UNITY
                     UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+#endif
                     continue;
                 }
+
 
                 var ptype = member.GetParameters();
 
@@ -154,12 +185,13 @@ namespace Foundation.Architecture
 
                 if (ptype.Length == 0)
                 {
-                    var del = Delegate.CreateDelegate(typeof(Action), Instance, member.Name) as Action;
+                    var del = Delegate.CreateDelegate(typeof(Action), Instance, member.Name);
                     _cacheSet.Add(member.Name, del);
                 }
                 else
                 {
-                    var del = Delegate.CreateDelegate(typeof(Action<object>), Instance, member.Name) as Action;
+                    var type = typeof(Action<>).MakeGenericType(ptype[0].ParameterType);
+                    var del = Delegate.CreateDelegate(type, Instance, member.Name);
                     _cacheSet.Add(member.Name, del);
                 }
             }
@@ -173,14 +205,18 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
+#if UNITY
                     UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+#endif
                     continue;
                 }
 
-                var get = Delegate.CreateDelegate(typeof(Func<object>), Instance, member.GetGetMethod());
+                var gtype = typeof(Func<>).MakeGenericType(member.PropertyType);
+                var get = Delegate.CreateDelegate(gtype, Instance, member.GetGetMethod());
                 _cacheGet.Add(member.Name, get);
 
-                var set = Delegate.CreateDelegate(typeof(Action<object>), Instance, member.GetSetMethod());
+                var stype = typeof(Action<>).MakeGenericType(member.PropertyType);
+                var set = Delegate.CreateDelegate(stype, Instance, member.GetSetMethod());
                 _cacheSet.Add(member.Name, set);
             }
         }
@@ -188,93 +224,40 @@ namespace Foundation.Architecture
         void CacheObservables()
         {
             var members = InstanceType.GetFields(BindingFlags.Public | BindingFlags.Instance)
-                .Where(o => o.FieldType == typeof(Observable<>))
+                .Where(o => o.FieldType.GetGenericTypeDefinition() == typeof(Observable<>))
                 .ToArray();
 
             foreach (var member in members)
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
+#if UNITY
                     UnityEngine.Debug.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+#endif
                     continue;
                 }
 
                 var obs = member.GetValue(Instance);
+                var otype = member.FieldType.GetGenericArguments()[0];
 
-                var get = Delegate.CreateDelegate(typeof(Func<object>), obs, obs.GetType().GetMethod("Get"));
+                var gtype = typeof(Func<>).MakeGenericType(otype);
+                var get = Delegate.CreateDelegate(gtype, obs, obs.GetType().GetMethod("Get"));
                 _cacheGet.Add(member.Name, get);
 
-                var set = Delegate.CreateDelegate(typeof(Action<object>), obs, obs.GetType().GetMethod("Set"));
+                var stype = typeof(Action<>).MakeGenericType(otype);
+                var set = Delegate.CreateDelegate(stype, obs, obs.GetType().GetMethod("Set"));
                 _cacheSet.Add(member.Name, set);
+
+                var einfo = obs.GetType().GetEvent("OnChange");
+
+                Action handler = () =>
+                {
+                    PropogatePropertyChange(member.Name);
+                };
+
+                einfo.AddEventHandler(obs, handler);
+                _cacheObs.Add(obs, handler);
             }
         }
-
-        ///// <summary>
-        ///// Get Member Value
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="memberName"></param>
-        ///// <returns></returns>
-        //public T Get<T>(string memberName)
-        //{
-        //    //TODO sanity
-        //    //TODO Cache Reflection
-        //    //TODO Conversion
-        //    var temp = this.GetType().GetMember(memberName)[0];
-        //    if (temp is FieldInfo)
-        //    {
-        //        return (T)(temp as FieldInfo).GetValue(Instance);
-        //    }
-        //    else if (temp is PropertyInfo)
-        //    {
-        //        return (T)(temp as PropertyInfo).GetValue(Instance, null);
-        //    }
-        //    else
-        //    {
-        //        return (T)(temp as MethodInfo).Invoke(Instance, null);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Set Member Value
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="memberName"></param>
-        ///// <param name="value"></param>
-        //public void Set<T>(string memberName, T value)
-        //{
-        //    //TODO sanity
-        //    //TODO Cache Reflection
-        //    //TODO Conversion
-        //    var temp = this.GetType().GetMember(memberName)[0];
-        //    if (temp is FieldInfo)
-        //    {
-        //        (temp as FieldInfo).SetValue(Instance, value);
-        //    }
-        //    else if (temp is PropertyInfo)
-        //    {
-        //        (temp as PropertyInfo).SetValue(Instance, value, null);
-        //    }
-        //    else
-        //    {
-        //        (temp as MethodInfo).Invoke(Instance, new object[] { value });
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Invoke Method Value
-        ///// </summary>
-        ///// <param name="memberName"></param>
-        //public void Invoke(string memberName)
-        //{
-        //    //TODO sanity
-        //    //TODO Cache Reflection
-        //    //TODO Conversion
-        //    var temp = this.GetType().GetMember(memberName)[0];
-        //    if (temp is MethodInfo)
-        //    {
-        //        (temp as MethodInfo).Invoke(Instance, null);
-        //    }
-        //}
     }
 }

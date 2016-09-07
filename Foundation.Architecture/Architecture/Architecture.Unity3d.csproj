@@ -57,6 +57,7 @@
     <Compile Include="Pooling\IPoolService.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Pooling\PoolService.cs" />
+    <Compile Include="Pooling\ThreadSafePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
