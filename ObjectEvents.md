@@ -7,7 +7,6 @@ This implementation makes use of static generics. This alows us to not use refle
 ## Use
 
 `````
-          [TestMethod]
         public void TestObjectRoute()
         {
             //define out message, a class
