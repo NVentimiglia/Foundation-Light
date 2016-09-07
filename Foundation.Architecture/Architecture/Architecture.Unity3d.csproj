@@ -41,7 +41,6 @@
     <Compile Include="Data\BufferExt.cs" />
     <Compile Include="Data\BufferHelper.cs" />
     <Compile Include="Data\JsonHelper.cs" />
-    <Compile Include="Injector\IInjectService.cs" />
     <Compile Include="Injector\InjectAttribute.cs" />
     <Compile Include="Injector\InjectService.cs" />
     <Compile Include="Logging\LogModel.cs" />
@@ -59,6 +58,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Threading\IThreadingService.cs" />
     <Compile Include="Threading\RoutineTimer.cs" />
+    <Compile Include="Threading\ThreadingService.cs" />
+    <Compile Include="Threading\UnityThreadService.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,33 +6,28 @@ namespace Foundation.Architecture.Tests
     [TestClass]
     public class InjectorTests
     {
-        protected IInjectService Container;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            Container = new InjectService();
+            InjectService.UnregisterAll();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
-            if (Container != null)
-            {
-                Container.UnregisterAll();
-                Container = null;
-            }
+            InjectService.UnregisterAll();
         }
 
         [TestMethod]
         public void TestTransient()
         {
             //Register a concrete type keyed by an interface
-            Container.RegisterTransient<IWordService, WordService>();
-            Container.RegisterTransient<ISentanceService, SentanceService>();
-            Container.RegisterTransient<Document>();
+            InjectService.RegisterTransient<IWordService, WordService>();
+            InjectService.RegisterTransient<ISentanceService, SentanceService>();
+            InjectService.RegisterTransient<Document>();
 
-            var document = Container.Get<Document>();
+            var document = InjectService.Get<Document>();
 
             Assert.IsNotNull(document);
             Assert.IsNotNull(document.Sentances);
@@ -44,22 +39,22 @@ namespace Foundation.Architecture.Tests
         public void TestTransient2()
         {
             //Not we are not using the interface here
-            Container.RegisterTransient<WordService>();
-            Assert.IsNotNull(Container.Get<WordService>());
+            InjectService.RegisterTransient<WordService>();
+            Assert.IsNotNull(InjectService.Get<WordService>());
 
-            Container.RegisterTransient(() => new SentanceService());
-            Assert.IsNotNull(Container.Get<SentanceService>());
+            InjectService.RegisterTransient(() => new SentanceService());
+            Assert.IsNotNull(InjectService.Get<SentanceService>());
         }
 
 
         [TestMethod]
         public void TestSingleton()
         {
-            Container.RegisterSingleton<IWordService, WordService>();
-            Container.RegisterSingleton<ISentanceService, SentanceService>();
-            Container.RegisterSingleton<Document>();
+            InjectService.RegisterSingleton<IWordService, WordService>();
+            InjectService.RegisterSingleton<ISentanceService, SentanceService>();
+            InjectService.RegisterSingleton<Document>();
 
-            var document = Container.Get<Document>();
+            var document = InjectService.Get<Document>();
 
             Assert.IsNotNull(document);
             Assert.IsNotNull(document.Sentances);
@@ -67,7 +62,7 @@ namespace Foundation.Architecture.Tests
             Assert.AreEqual(document.Print(), document.Sentances.GetSentance());
 
 
-            var document2 = Container.Get<Document>();
+            var document2 = InjectService.Get<Document>();
 
             Assert.AreEqual(document, document2);
             Assert.AreEqual(document.Words, document2.Words);
@@ -79,59 +74,59 @@ namespace Foundation.Architecture.Tests
         {
             // Note we are NOT using the interface here
             // Since we use a dictionary internally, these are keyed by the concrete type only.
-            // We can make the container more flexible, but, that would be a performance hit.
+            // We can make the InjectService more flexible, but, that would be a performance hit.
 
-            Container.RegisterSingleton<WordService>();
-            Assert.IsNotNull(Container.Get<WordService>());
+            InjectService.RegisterSingleton<WordService>();
+            Assert.IsNotNull(InjectService.Get<WordService>());
 
-            Container.RegisterSingleton(() => new SentanceService());
-            Assert.IsNotNull(Container.Get<SentanceService>());
+            InjectService.RegisterSingleton(() => new SentanceService());
+            Assert.IsNotNull(InjectService.Get<SentanceService>());
 
-            Container.RegisterSingleton(new Document());
-            Assert.IsNotNull(Container.Get<Document>());
+            InjectService.RegisterSingleton(new Document());
+            Assert.IsNotNull(InjectService.Get<Document>());
 
-            Container.UnregisterAll();
+            InjectService.UnregisterAll();
 
-            Container.RegisterSingleton<IWordService, WordService>(new WordService());
-            Assert.IsNotNull(Container.Get<IWordService>());
+            InjectService.RegisterSingleton<IWordService, WordService>(new WordService());
+            Assert.IsNotNull(InjectService.Get<IWordService>());
 
-            Container.RegisterSingleton<ISentanceService, SentanceService>(() => new SentanceService());
-            Assert.IsNotNull(Container.Get<ISentanceService>());
+            InjectService.RegisterSingleton<ISentanceService, SentanceService>(() => new SentanceService());
+            Assert.IsNotNull(InjectService.Get<ISentanceService>());
         }
 
 
         [TestMethod]
         public void TestRemove()
         {
-            Container.RegisterTransient<IWordService, WordService>();
-            Container.RegisterTransient<ISentanceService, SentanceService>();
-            Container.RegisterTransient<Document>();
+            InjectService.RegisterTransient<IWordService, WordService>();
+            InjectService.RegisterTransient<ISentanceService, SentanceService>();
+            InjectService.RegisterTransient<Document>();
 
 
-            Container.Unregister<Document>();
-            var document = Container.Get<Document>();
+            InjectService.Unregister<Document>();
+            var document = InjectService.Get<Document>();
             Assert.IsNull(document);
 
-            Container.UnregisterAll();
-            Assert.IsNull(Container.Get<IWordService>());
-            Assert.IsNull(Container.Get<ISentanceService>());
+            InjectService.UnregisterAll();
+            Assert.IsNull(InjectService.Get<IWordService>());
+            Assert.IsNull(InjectService.Get<ISentanceService>());
         }
 
         [TestMethod]
         public void TestNull()
         {
-            var document = Container.Get<Document>();
+            var document = InjectService.Get<Document>();
             Assert.IsNull(document);
         }
 
         [TestMethod]
         public void TestPrint()
         {
-            Container.RegisterSingleton<IWordService, WordService>();
-            Container.RegisterSingleton<ISentanceService, SentanceService>();
-            Container.RegisterSingleton<Document>();
+            InjectService.RegisterSingleton<IWordService, WordService>();
+            InjectService.RegisterSingleton<ISentanceService, SentanceService>();
+            InjectService.RegisterSingleton<Document>();
 
-            var log = Container.Print();
+            var log = InjectService.Print();
             Assert.IsTrue(log.Count() == 3);
         }
 

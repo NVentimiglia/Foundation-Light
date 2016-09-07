@@ -12,8 +12,7 @@ namespace Foundation.Architecture
         public TimeSpan Interval { get; private set; }
         public Action Callback { get; private set; }
         public bool IsRunning { get; private set; }
-
-        private IThreadingService service;
+        
         private IDisposable routine;
         private double delta;
 
@@ -21,7 +20,6 @@ namespace Foundation.Architecture
         {
             Callback = callback;
             Interval = interval;
-            this.service = InjectService.Instance.Get<IThreadingService>();
         }
 
         public void Dispose()
@@ -49,7 +47,7 @@ namespace Foundation.Architecture
             {
                 IsRunning = true;
 
-                routine = service.RunUpdate(Handler);
+                routine = ThreadingService.RunUpdate(Handler);
             }
 
             return this;

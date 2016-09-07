@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Foundation.Architecture
 {
     /// <summary>
-    /// Unity implementation
+    /// Cross platform logging interface
     /// </summary>
     public class Logger
     {

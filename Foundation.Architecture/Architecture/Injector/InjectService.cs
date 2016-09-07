@@ -10,87 +10,127 @@ namespace Foundation.Architecture
     /// <summary>
     ///     Default Inject Service
     /// </summary>
-    public class InjectService : IInjectService
+    public class InjectService 
     {
-        /// <summary>
-        /// Static Default Instance
-        /// </summary>
-        public static readonly IInjectService Instance = new InjectService();
-
         // RegisterTransient
 
-        public void RegisterTransient<TInterface, TInstance>() where TInstance : class, new()
+        /// <summary>
+        ///     Registers a new service. Transient is a new instance per get.
+        /// </summary>
+        public static void RegisterTransient<TInterface, TInstance>() where TInstance : class, new()
         {
             Container.Add(typeof(TInterface), new InjectReference(DefaultFactory<TInstance>()));
         }
 
-        public void RegisterTransient<TInstance>() where TInstance : class, new()
+        /// <summary>
+        ///     Registers a new service. Transient is a new instance per get.
+        /// </summary>
+        public static void RegisterTransient<TInstance>() where TInstance : class, new()
         {
             Container.Add(typeof(TInstance), new InjectReference(DefaultFactory<TInstance>()));
         }
 
-        public void RegisterTransient<TInterface, TInstance>(Func<TInstance> factory) where TInstance : class
+        /// <summary>
+        ///     Registers a new service. Transient is a new instance per get.
+        /// </summary>
+        public static void RegisterTransient<TInterface, TInstance>(Func<TInstance> factory) where TInstance : class
         {
             Container.Add(typeof(TInterface), new InjectReference(DefaultFactory(factory)));
         }
 
-        public void RegisterTransient<TInstance>(Func<TInstance> factory) where TInstance : class
+        /// <summary>
+        ///     Registers a new service. Transient is a new instance per get.
+        /// </summary>
+        public static void RegisterTransient<TInstance>(Func<TInstance> factory) where TInstance : class
         {
             Container.Add(typeof(TInstance), new InjectReference(DefaultFactory(factory)));
         }
 
         // RegisterSingleton
 
-        public void RegisterSingleton<TInterface, TInstance>() where TInstance : class, new()
+        /// <summary>
+        ///     Registers a new service. Singleton is a one instance forever.
+        /// </summary>
+        public static void RegisterSingleton<TInterface, TInstance>() where TInstance : class, new()
         {
             Container.Add(typeof(TInterface), new InjectReference(DefaultFactory<TInstance>(), true));
         }
 
-        public void RegisterSingleton<TInstance>() where TInstance : class, new()
+        /// <summary>
+        ///     Registers a new service. Singleton is a one instance forever.
+        /// </summary>
+        public static void RegisterSingleton<TInstance>() where TInstance : class, new()
         {
             Container.Add(typeof(TInstance), new InjectReference(DefaultFactory<TInstance>(), true));
         }
 
-        public void RegisterSingleton<TInterface, TInstance>(Func<TInstance> factory) where TInstance : class
+        /// <summary>
+        ///     Registers a new service. Singleton is a one instance forever.
+        /// </summary>
+        public static void RegisterSingleton<TInterface, TInstance>(Func<TInstance> factory) where TInstance : class
         {
             Container.Add(typeof(TInterface), new InjectReference(DefaultFactory(factory), true));
         }
 
-        public void RegisterSingleton<TInstance>(Func<TInstance> factory) where TInstance : class
+        /// <summary>
+        ///     Registers a new service. Singleton is a one instance forever.
+        /// </summary>
+        public static void RegisterSingleton<TInstance>(Func<TInstance> factory) where TInstance : class
         {
             Container.Add(typeof(TInstance), new InjectReference(DefaultFactory(factory), true));
         }
 
-        public void RegisterSingleton<TInterface, TInstance>(TInstance instance) where TInstance : class
+        /// <summary>
+        ///     Registers a new service. Singleton is a one instance forever.
+        /// </summary>
+        public static void RegisterSingleton<TInterface, TInstance>(TInstance instance) where TInstance : class
         {
             Container.Add(typeof(TInterface), new InjectReference(instance, true));
         }
 
-        public void RegisterSingleton<TInstance>(TInstance instance) where TInstance : class
+        /// <summary>
+        ///     Registers a new service. Singleton is a one instance forever.
+        /// </summary>
+        public static void RegisterSingleton<TInstance>(TInstance instance) where TInstance : class
         {
             Container.Add(typeof(TInstance), new InjectReference(instance, true));
         }
 
         // Unregister
 
-        public bool Unregister<TInterface>() where TInterface : class, new()
+        /// <summary>
+        ///     Removes a reference from the container
+        /// </summary>
+        public static bool Unregister<TInterface>() where TInterface : class, new()
         {
             return Container.Remove(typeof(TInterface));
         }
 
-        public void UnregisterAll()
+        /// <summary>
+        ///     Clears the container
+        /// </summary>
+        public static void UnregisterAll()
         {
             Container.Clear();
         }
 
         // Get
 
-        public TInterface Get<TInterface>() where TInterface : class
+        /// <summary>
+        ///     Get an instance from the container
+        /// </summary>
+        /// <typeparam name="TInterface"></typeparam>
+        /// <returns></returns>
+        public static TInterface Get<TInterface>() where TInterface : class
         {
             return Get(typeof(TInterface)) as TInterface;
         }
 
-        public object Get(Type interfaceType)
+        /// <summary>
+        ///     Get an instance from the container
+        /// </summary>
+        /// <returns></returns>
+        public static object Get(Type interfaceType)
         {
             if (!Container.ContainsKey(interfaceType))
                 return null;
@@ -116,7 +156,10 @@ namespace Foundation.Architecture
 
         // Print
 
-        public IEnumerable<string> Print()
+        /// <summary>
+        ///     Prints the contents of the container
+        /// </summary>
+        public static IEnumerable<string> Print()
         {
             foreach (var reference in Container)
                 if (reference.Value.Instance != null)
@@ -127,7 +170,14 @@ namespace Foundation.Architecture
 
         // Reflection
 
-        public void InjectInto(object instance)
+        /// <summary>
+        ///     Injects dependencies into the object using reflection and the Inject annotation
+        /// </summary>
+        /// <remarks>
+        ///     Reflection, Expensive
+        /// </remarks>
+        /// <param name="instance">the instance to find dependencies for</param>
+        public static void InjectInto(object instance)
         {
             //TODO Reflector Cache
             var allFields = instance
@@ -177,9 +227,9 @@ namespace Foundation.Architecture
             }
         }
 
-        private readonly Dictionary<Type, InjectReference> Container = new Dictionary<Type, InjectReference>();
+        private static readonly Dictionary<Type, InjectReference> Container = new Dictionary<Type, InjectReference>();
 
-        private Func<TInstance> DefaultFactory<TInstance>() where TInstance : class, new()
+        private static Func<TInstance> DefaultFactory<TInstance>() where TInstance : class, new()
         {
             return () =>
             {
@@ -189,7 +239,7 @@ namespace Foundation.Architecture
             };
         }
 
-        private Func<TInstance> DefaultFactory<TInstance>(Func<TInstance> factory) where TInstance : class
+        private static Func<TInstance> DefaultFactory<TInstance>(Func<TInstance> factory) where TInstance : class
         {
             return () =>
             {

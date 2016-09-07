@@ -5,7 +5,7 @@ using System;
 namespace Foundation.Architecture
 {
     /// <summary>
-    /// Default implementation
+    /// Cross platform logging interface
     /// </summary>
     public static class Logger
     {

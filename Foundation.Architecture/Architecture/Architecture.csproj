@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="Data\BufferExt.cs" />
     <Compile Include="Data\BufferHelper.cs" />
-    <Compile Include="Injector\IInjectService.cs" />
     <Compile Include="Injector\InjectAttribute.cs" />
     <Compile Include="Injector\InjectService.cs" />
     <Compile Include="Logging\Logger.cs" />
@@ -65,17 +64,15 @@
     <Compile Include="Data\JsonHelper.cs" />
     <Compile Include="Threading\AsyncLock.cs" />
     <Compile Include="Threading\AsyncSemaphore.cs" />
+    <Compile Include="Threading\AsyncThreadService.cs" />
     <Compile Include="Threading\IThreadingService.cs" />
     <Compile Include="Threading\RoutineTimer.cs" />
+    <Compile Include="Threading\ThreadingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Experimental.LN\" />
-    <Folder Include="Data\Experimental.NV\" />
-    <Folder Include="Data\Experimental.Proto\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
