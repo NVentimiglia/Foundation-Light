@@ -10,7 +10,7 @@ namespace Foundation.Architecture
     /// <remarks>
     /// E.G. Send Message to Game Object
     /// </remarks>
-    /// <typeparam name="TRoute">The type of route key, generally an byte, string, or game object</typeparam>
+    /// <typeparam name="TRoute">The type of route key, generally string or game object</typeparam>
     /// <typeparam name="TMessage">the type of message being raised</typeparam>
     public static class ObjectEvents<TRoute, TMessage> where TMessage : class where TRoute : class
     {
