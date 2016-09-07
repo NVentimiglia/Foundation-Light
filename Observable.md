@@ -17,18 +17,23 @@ The standard 'microsoft way' of making an object observable. Includes a single e
  `````
  
 **ObservableObject**
+
 Implements IPropertyChange for poco objects
  
 **ObservableBehaviour**
+
 Implements IPropertyChange for MonoBehaviours objects
 
 **ObservableCollection**
+
 A specialized list with events for when items are added, removed, or changed.
 
 **Observable**
+
 An alternative way of observing an object which does not use magic strings. This object is generic and includes the change event internally.
 
 **ObservableProxy**
+
  -Wrapps observable's (all of the above) and exposes an easy to use interface that binders can listen to.
  - Heavily cached since reflection is expensive
  - Supports methods and properties
