@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Foundation.Architecture.Tests
 {
@@ -120,6 +122,54 @@ namespace Foundation.Architecture.Tests
 
             vm.MyObservable = 0;
             Assert.AreEqual(counter2, 4);
+        }
+
+        [TestMethod]
+        public void TestObservableMetrics()
+        {
+            var vm = new ViewModel();
+            var proxy = new ObservableProxy(vm);
+            var watch = new Stopwatch();
+            long test1 = long.MinValue;
+            long testReflected = long.MinValue;
+            long testInvoke = long.MinValue;
+
+            var invoke = (Action) Delegate.CreateDelegate(typeof(Action), vm, "MyCommand");
+
+            //Dry run first before real test
+            for (int k = 0; k < 5; k++)
+            {
+                watch.Reset();
+                watch.Start();
+                for (int i = 0;i < 1000;i++)
+                {
+                    vm.MyCommand();
+                }
+                watch.Stop();
+                test1 = watch.ElapsedTicks;
+
+                watch.Reset();
+                watch.Start();
+                for (int i = 0;i < 1000;i++)
+                {
+                    proxy.Invoke("MyCommand");
+                }
+                watch.Stop();
+                testReflected = watch.ElapsedTicks;
+
+
+                watch.Reset();
+                watch.Start();
+                for (int i = 0;i < 1000;i++)
+                {
+                    invoke();
+                }
+                watch.Stop();
+                testInvoke = watch.ElapsedTicks;
+            }
+
+            //Normal = 80 Reflected = 370 W/O Dictionary lookup 82
+            Console.WriteLine("Normal = "+ test1+" Reflected = "+testReflected +" W/O Dictionary lookup "+ testInvoke);
 
         }
     }
