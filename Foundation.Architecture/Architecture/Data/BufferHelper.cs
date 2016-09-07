@@ -1,7 +1,6 @@
 // Nicholas Ventimiglia 2016-09-05
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace Foundation.Architecture
@@ -18,8 +17,8 @@ namespace Foundation.Architecture
 
         public static unsafe bool ReadBool(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(bool));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(bool));
 
             bool result;
             fixed (byte* ptr = buffer)
@@ -31,8 +30,8 @@ namespace Foundation.Architecture
 
         public static unsafe byte ReadByte(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(byte));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(byte));
 
             byte result;
             fixed (byte* ptr = buffer)
@@ -44,8 +43,8 @@ namespace Foundation.Architecture
 
         public static unsafe short ReadInt16(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(short));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(short));
 
             short result;
             fixed (byte* ptr = buffer)
@@ -57,8 +56,8 @@ namespace Foundation.Architecture
 
         public static unsafe ushort ReadUInt16(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(ushort));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(ushort));
 
             ushort result;
             fixed (byte* ptr = buffer)
@@ -70,8 +69,8 @@ namespace Foundation.Architecture
 
         public static unsafe int ReadInt32(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(int));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(int));
 
             int result;
             fixed (byte* ptr = buffer)
@@ -83,8 +82,8 @@ namespace Foundation.Architecture
 
         public static unsafe uint ReadUInt32(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(uint));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(uint));
 
             uint result;
             fixed (byte* ptr = buffer)
@@ -96,8 +95,8 @@ namespace Foundation.Architecture
 
         public static unsafe long ReadInt64(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(long));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(long));
 
             long result;
             fixed (byte* ptr = buffer)
@@ -109,8 +108,8 @@ namespace Foundation.Architecture
 
         public static unsafe ulong ReadUInt64(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(ulong));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(ulong));
 
             ulong result;
             fixed (byte* ptr = buffer)
@@ -122,8 +121,8 @@ namespace Foundation.Architecture
 
         public static unsafe double ReadDouble(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(double));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(double));
 
             double result;
             fixed (byte* ptr = buffer)
@@ -135,8 +134,8 @@ namespace Foundation.Architecture
 
         public static unsafe float ReadFloat(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(float));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(float));
 
             float result;
             fixed (byte* ptr = buffer)
@@ -148,8 +147,8 @@ namespace Foundation.Architecture
 
         public static unsafe char ReadChar(byte[] buffer, int index)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(char));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(char));
 
             char result;
             fixed (byte* ptr = buffer)
@@ -173,24 +172,24 @@ namespace Foundation.Architecture
 
         public static void Write(byte[] buffer, int index, byte[] payload, int count)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + count);
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + count);
 
             Buffer.BlockCopy(payload, 0, buffer, index, count);
         }
 
         public static void Write(byte[] buffer, int index, byte b)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(byte));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(byte));
 
             buffer[index] = b;
         }
 
         public static unsafe void Write(byte[] buffer, int index, bool value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(bool));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(bool));
 
             fixed (byte* ptr = buffer)
             {
@@ -200,8 +199,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, short value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(short));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(short));
 
             fixed (byte* ptr = buffer)
             {
@@ -211,8 +210,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, ushort value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(ushort));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(ushort));
 
             fixed (byte* ptr = buffer)
             {
@@ -222,8 +221,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, int value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(int));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(int));
 
             fixed (byte* ptr = buffer)
             {
@@ -233,8 +232,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, uint value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(uint));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(uint));
 
             fixed (byte* ptr = buffer)
             {
@@ -244,8 +243,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, double value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(double));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(double));
 
             fixed (byte* ptr = buffer)
             {
@@ -255,8 +254,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, long value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(long));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(long));
 
             fixed (byte* ptr = buffer)
             {
@@ -266,8 +265,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, ulong value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(ulong));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(ulong));
 
             fixed (byte* ptr = buffer)
             {
@@ -277,8 +276,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, float value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(float));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(float));
 
             fixed (byte* ptr = buffer)
             {
@@ -288,8 +287,8 @@ namespace Foundation.Architecture
 
         public static unsafe void Write(byte[] buffer, int index, char value)
         {
-            Contract.Ensures(buffer != null);
-            Contract.Ensures(buffer.Length >= index + sizeof(char));
+            Ensures(buffer != null);
+            Ensures(buffer.Length >= index + sizeof(char));
 
             fixed (byte* ptr = buffer)
             {
@@ -299,12 +298,21 @@ namespace Foundation.Architecture
 
         public static void Write(byte[] buffer, int index, string value)
         {
-            Contract.Ensures(buffer != null);
+            Ensures(buffer != null);
             var payload = Encoding.UTF8.GetBytes(value);
             Write(buffer, index, (ushort) payload.Length);
             Write(buffer, index + sizeof(ushort), payload, payload.Length);
         }
 
+        #endregion
+
+        #region Private
+
+        public static void Ensures(bool assertion)
+        {
+            if(!assertion)
+                throw new ArgumentException("BufferHelper : Method failed sanity.");
+        }
         #endregion
     }
 }
