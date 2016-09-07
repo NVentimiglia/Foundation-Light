@@ -36,7 +36,7 @@ An alternative way of observing an object which does not use magic strings. This
 
 Reflection is heavy and costly. This class makes it better. As a bonus, acts as a proxy for binding to non MVVM objects.
 
- -Wrapps observable's (all of the above) and exposes an easy to use interface that binders can listen to.
+ - Wrapps observable's (all of the above) and exposes an easy to use interface that binders can listen to.
  - Heavily cached since reflection is expensive
  - Supports methods and properties
  - Supports Observable<> fields
