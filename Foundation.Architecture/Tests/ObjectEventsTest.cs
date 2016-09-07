@@ -54,11 +54,17 @@ namespace Foundation.Architecture.Tests
         [TestMethod]
         public void TestObjectRoute()
         {
+            //define out message, a class
             var msg = new Msg { Content = MagicString };
+
+            //define our routes (strings or game objects or something else)
             var route = new GameObject();
             var route2 = new GameObject();
 
+            //subscribe using the object reference
             ObjectEvents<GameObject, Msg>.Subscribe(route, Handler);
+
+            //many ways to send
             ObjectEvents<GameObject, Msg>.Publish(route, msg);
             ObjectEvents.Publish(route, msg);
             ObjectEvents.Publish(route, msg, typeof(GameObject), typeof(Msg));
@@ -66,9 +72,11 @@ namespace Foundation.Architecture.Tests
 
             //bad route
             ObjectEvents.Publish(route2, msg, typeof(GameObject), typeof(Msg));
-            ObjectEvents<GameObject, Msg>.Unsubscribe(route, Handler);
-            ObjectEvents<GameObject, Msg>.Publish(route, msg);
 
+            //be sure to clean up as we are not using weak references
+            ObjectEvents<GameObject, Msg>.Unsubscribe(route, Handler);
+
+            ObjectEvents<GameObject, Msg>.Publish(route, msg);
             Assert.AreEqual(counter, 3);
 
             ObjectEvents<GameObject, Msg>.Subscribe(route, Handler);

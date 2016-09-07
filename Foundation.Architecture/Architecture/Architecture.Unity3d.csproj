@@ -58,15 +58,8 @@
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Pooling\PoolService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Threading\IThreadingService.cs" />
-    <Compile Include="Threading\RoutineTimer.cs" />
-    <Compile Include="Views\INavigationService.cs" />
-    <Compile Include="Views\IView.cs" />
-    <Compile Include="Views\IViewFactory.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tasks\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo f | xcopy "$(TargetDir)Foundation.Architecture.Unity3d.dll" "$(SolutionDir)..\Plugins\Foundation.Architecture.Unity3d.dll"  /D /Y</PostBuildEvent>
