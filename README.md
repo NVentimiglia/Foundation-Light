@@ -16,5 +16,8 @@ A Framework level library for client / server development. Built with MSN best p
   - Includes MVVM support with databinding, view factory, and a navigational services.
 
 
-## Injector
 [Injector : Service Locator / Inversion of control module](Injector.md) 
+
+[Domain Events : Global Message Broker](Injector.md) 
+
+[Object Events : Routed Message broker / SendMessage replacement](Injector.md) 
