@@ -36,6 +36,15 @@ namespace Foundation.Architecture.Tests
 
         }
 
+        public class ViewModel2 : ObservableObject
+        {
+            public Observable<int> MyObservable;
+            public ViewModel2()
+            {
+                MyObservable = new Observable<int>("MyObservable", this);
+            }
+        }
+
         [TestMethod]
         public void TestObservableObject()
         {
@@ -124,16 +133,6 @@ namespace Foundation.Architecture.Tests
             Assert.AreEqual(counter2, 4);
         }
 
-
-        public class ViewModel2 : ObservableObject
-        {
-            public Observable<int> MyObservable;
-
-            public ViewModel2()
-            {
-                MyObservable = new Observable<int>("MyObservable", this);
-            }
-        }
 
         [TestMethod]
         public void TestObservableParenting()
