@@ -23,14 +23,20 @@ namespace Foundation.Architecture.Tests
         [TestMethod]
         public void TestSubscribe()
         {
+            //Define a message class to send
             var msg = new Msg {Content = MagicString};
             
+            //subscribe you handlers
             DomainEvents<Msg>.Subscribe(Handler);
+
+            //maby ways to send
             DomainEvents<Msg>.Publish(msg);
             DomainEvents.Publish(msg);
             DomainEvents.Publish(msg, typeof(Msg));
+
             Assert.AreEqual(counter, 3);
 
+            //unsubcribe when done as we are not using weakreferences internally
             DomainEvents<Msg>.Unsubscribe(Handler);
             DomainEvents.Publish(msg);
             
