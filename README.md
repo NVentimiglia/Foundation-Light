@@ -18,6 +18,6 @@ A Framework level library for client / server development. Built with MSN best p
 
 [Injector : Service Locator / Inversion of control module](Injector.md) 
 
-[Domain Events : Global Message Broker](Injector.md) 
+[Domain Events : Global Message Broker](DomainEvents.md) 
 
-[Object Events : Routed Message broker / SendMessage replacement](Injector.md) 
+[Object Events : Routed Message broker / SendMessage replacement](ObjectEvents.md) 
