@@ -1,4 +1,5 @@
-﻿using Foundation.Architecture;
+﻿using System;
+using Foundation.Architecture;
 using UnityEngine;
 
 [IntegrationTest.DynamicTest("TestScene")]
@@ -10,18 +11,32 @@ public class ObjectEventsTest : MonoBehaviour
         public string Content { get; set; }
     }
 
+    public class SpaceShip
+    {
+
+    }
+
+    public SpaceShip route = new SpaceShip();
+    public SpaceShip route2 = new SpaceShip();
+
     const string MagicString = "Hello World";
     private int counter = 0;
 
     void Start()
     {
-        TestMethod.RunAll(this, () => { });
+        TestMethod.RunAll(this, () =>
+        {
+            counter = 0;
+            ObjectEvents<string, Msg>.Clear();
+            ObjectEvents<GameObject, Msg>.Clear();
+        });
     }
 
     [TestMethod]
     public void TestStringRoute()
     {
-        var msg = new Msg { Content = MagicString };
+        counter = 0;
+        var msg = new Msg {Content = MagicString};
         var route = "Users/NVenti";
 
         ObjectEvents<string, Msg>.Subscribe(route, Handler);
@@ -45,37 +60,35 @@ public class ObjectEventsTest : MonoBehaviour
     }
 
 
+
     [TestMethod]
     public void TestObjectRoute()
     {
+        counter = 0;
         //define out message, a class
-        var msg = new Msg { Content = MagicString };
-
-        //define our routes (strings or game objects or something else)
-        var route = new GameObject();
-        var route2 = new GameObject();
+        var msg = new Msg {Content = MagicString};
 
         //subscribe using the object reference
-        ObjectEvents<GameObject, Msg>.Subscribe(route, Handler);
+        ObjectEvents<SpaceShip, Msg>.Subscribe(route, Handler);
 
         //many ways to send
-        ObjectEvents<GameObject, Msg>.Publish(route, msg);
+        ObjectEvents<SpaceShip, Msg>.Publish(route, msg);
         ObjectEvents.Publish(route, msg);
-        ObjectEvents.Publish(route, msg, typeof(GameObject), typeof(Msg));
+        ObjectEvents.Publish(route, msg, typeof(SpaceShip), typeof(Msg));
         Assert.AreEqual(counter, 3);
 
         //bad route
-        ObjectEvents.Publish(route2, msg, typeof(GameObject), typeof(Msg));
+        ObjectEvents.Publish(route2, msg, typeof(SpaceShip), typeof(Msg));
 
         //be sure to clean up as we are not using weak references
-        ObjectEvents<GameObject, Msg>.Unsubscribe(route, Handler);
+        ObjectEvents<SpaceShip, Msg>.Unsubscribe(route, Handler);
 
-        ObjectEvents<GameObject, Msg>.Publish(route, msg);
+        ObjectEvents<SpaceShip, Msg>.Publish(route, msg);
         Assert.AreEqual(counter, 3);
 
-        ObjectEvents<GameObject, Msg>.Subscribe(route, Handler);
-        ObjectEvents<GameObject, Msg>.Unsubscribe(route);
-        ObjectEvents<GameObject, Msg>.Publish(route, msg);
+        ObjectEvents<SpaceShip, Msg>.Subscribe(route, Handler);
+        ObjectEvents<SpaceShip, Msg>.Unsubscribe(route);
+        ObjectEvents<SpaceShip, Msg>.Publish(route, msg);
 
         Assert.AreEqual(counter, 3);
     }

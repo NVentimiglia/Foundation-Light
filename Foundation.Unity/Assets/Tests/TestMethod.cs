@@ -16,9 +16,9 @@ public class TestMethod : Attribute
 
     public static IEnumerator RunAllAsync(MonoBehaviour testClass, Action cleanup)
     {
-        var calls = testClass.GetType().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance)
+        var calls = testClass.GetType().GetMethods()
             .Where(
-                o => o.GetCustomAttributes(typeof(TestMethod), true)
+                o => o.GetCustomAttributes(typeof(TestMethod), false)
                     .Any(a => a.GetType() == typeof(TestMethod)))
             .ToArray();
 

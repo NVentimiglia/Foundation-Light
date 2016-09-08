@@ -74,8 +74,8 @@ public class BufferHelperTests : MonoBehaviour
 
             BufferHelper.Write(buffer, 0, 69f);
 
-            var val = BufferHelper.ReadFloat(buffer, 0);
-            val = BufferHelper.ReadFloat(buffer, sizeof(float));
+            BufferHelper.ReadFloat(buffer, 0);
+            BufferHelper.ReadFloat(buffer, sizeof(float));
 
             Assert.Fail("Should of Failed");
 

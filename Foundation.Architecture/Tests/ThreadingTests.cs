@@ -42,7 +42,7 @@ namespace Foundation.Architecture.Tests
         [TestMethod]
         public async Task TestDelay()
         {
-            var task = ThreadingService.RunDelay(UpdateDelay, 1000);
+            var task = ThreadingService.RunDelay(UpdateDelay, 1);
             await Task.Delay(500);
             //Asset Not early executed
             Assert.IsTrue(updateCounter == 0);
@@ -52,7 +52,7 @@ namespace Foundation.Architecture.Tests
             task.Dispose();
 
             updateCounter = 0;
-            task = ThreadingService.RunDelay(UpdateDelay, 1000);
+            task = ThreadingService.RunDelay(UpdateDelay, 1);
             await Task.Delay(500);
             task.Dispose();
             await Task.Delay(1500);

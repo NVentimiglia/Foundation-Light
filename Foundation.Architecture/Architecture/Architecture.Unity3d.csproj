@@ -57,14 +57,15 @@
     <Compile Include="Pooling\ThreadSafePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Threading\Internal\IThreadingService.cs" />
-    <Compile Include="Threading\Internal\ThreadService.Unity3d.cs" />
+    <Compile Include="Threading\Internal\UnityThreadService.cs" />
     <Compile Include="Threading\RoutineTimer.cs" />
     <Compile Include="Threading\ThreadingService.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo f | xcopy "$(TargetDir)Foundation.Architecture.Unity3d.dll" "$(SolutionDir)..\Foundation.Unity\Assets\Plugins\Foundation.Architecture.Unity3d.dll"  /D /Y</PostBuildEvent>
+    <PostBuildEvent>echo f | xcopy "$(TargetDir)Foundation.Architecture.Unity3d.dll" "$(SolutionDir)..\Foundation.Unity\Assets\Plugins\Foundation.Architecture.Unity3d.dll"  /D /Y
+echo f | xcopy "$(TargetDir)Foundation.Architecture.Unity3d.pdb" "$(SolutionDir)..\Foundation.Unity\Assets\Plugins\Foundation.Architecture.Unity3d.pdb"  /D /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

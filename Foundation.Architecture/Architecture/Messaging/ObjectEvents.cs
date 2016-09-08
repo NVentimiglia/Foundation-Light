@@ -81,6 +81,15 @@ namespace Foundation.Architecture
                 _listeners.Remove(route);
             }
         }
+
+
+        /// <summary>
+        /// removes all handlers
+        /// </summary>
+        public static void Clear()
+        {
+            _listeners.Clear();
+        }
     }
 
     /// <summary>

@@ -18,8 +18,9 @@ public class ThreadingTests : MonoBehaviour
     public IEnumerator TestUpdate()
     {
         var task = ThreadingService.RunUpdate(MyUpdate);
+        yield return 1;
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1.2f);
 
         //Asset works
         Assert.IsTrue(updateCounter >= 1);
@@ -45,9 +46,9 @@ public class ThreadingTests : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         //Asset Not early executed
         Assert.IsTrue(updateCounter == 0);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2f);
         //Asset Executed in time
-        Assert.IsTrue(updateCounter == 1);
+        Assert.IsTrue(updateCounter >= 1);
         task.Dispose();
 
         updateCounter = 0;

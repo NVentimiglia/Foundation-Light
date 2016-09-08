@@ -15,6 +15,11 @@ namespace Foundation.Architecture.Internal
                 IsDisposed = true;
             }
         }
+        
+        public bool IsMainThread
+        {
+            get { return true; }
+        }
 
         public IDisposable RunUpdate(Action<double> callback)
         {
@@ -23,30 +28,37 @@ namespace Foundation.Architecture.Internal
             RunUpdate(callback, task);
             return task;
         }
-        
-        public IDisposable RunDelay(Action callback, int intervalMs = 5000)
+
+        public IDisposable RunDelay(Action callback, float seconds = 5)
         {
             var task = new ThreadTask();
             task.IsDisposed = false;
-            RunUpdate(callback, intervalMs, task);
+            RunUpdate(callback, seconds, task);
             return task;
         }
-        
+
         public void RunRoutine(IEnumerator routine)
         {
             RunRoutineAsync(routine);
         }
-        
+
         public void RunMainThread(Action action)
         {
             //NotImplemented
             action();
         }
-        
+
         public void RunBackgroundThread(Action action)
         {
             //NotImplemented
             action();
+        }
+
+        public void RunBackgroundThread(Action backgroundWork, Action mainWork)
+        {
+            //NotImplemented
+            backgroundWork();
+            mainWork();
         }
 
         async void RunUpdate(Action<double> callback, ThreadTask task)
@@ -64,9 +76,9 @@ namespace Foundation.Architecture.Internal
             }
         }
 
-        async void RunUpdate(Action callback, int intervalMs, ThreadTask task)
+        async void RunUpdate(Action callback, float seconds, ThreadTask task)
         {
-            await Task.Delay(intervalMs);
+            await Task.Delay(TimeSpan.FromSeconds(seconds));
 
             if (!task.IsDisposed)
             {

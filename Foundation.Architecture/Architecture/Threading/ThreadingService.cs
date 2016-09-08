@@ -17,6 +17,13 @@ namespace Foundation.Architecture
 #else
         static readonly IThreadingService Instance = new AsyncThreadService();
 #endif
+        /// <summary>
+        /// Checks if this is the main thread
+        /// </summary>
+        public static bool IsMainThread
+        {
+            get { return Instance.IsMainThread; }
+        }
 
         /// <summary>
         /// A long running (continuous) update loop
@@ -31,9 +38,9 @@ namespace Foundation.Architecture
         /// <summary>
         /// Registers a timeout (Wait and Invoke)
         /// </summary>
-        public static IDisposable RunDelay(Action callback, int intervalMs = 5000)
+        public static IDisposable RunDelay(Action callback, float seconds = 5)
         {
-            return Instance.RunDelay(callback, intervalMs);
+            return Instance.RunDelay(callback, seconds);
         }
       
         /// <summary>
@@ -58,6 +65,14 @@ namespace Foundation.Architecture
         public static void RunBackgroundThread(Action action)
         {
             Instance.RunBackgroundThread(action);
+        }
+
+        /// <summary>
+        /// Run a background job with completion
+        /// </summary>
+        public static void RunBackgroundThread(Action backgroundWork, Action mainWork)
+        {
+            Instance.RunBackgroundThread(backgroundWork, mainWork);
         }
     }
 }

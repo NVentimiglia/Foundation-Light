@@ -52,6 +52,12 @@
     <Reference Include="UnityEngine">
       <HintPath>Library\UnityAssemblies\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -71,7 +77,6 @@
     <Compile Include="Assets\Tests\DemoTest.cs" />
     <Compile Include="Assets\Tests\DomainEventsTest.cs" />
     <Compile Include="Assets\Tests\InjectorTests.cs" />
-    <Compile Include="Assets\Tests\JSONSerializerTests.cs" />
     <Compile Include="Assets\Tests\ObjectEventsTest.cs" />
     <Compile Include="Assets\Tests\ObservableTests.cs" />
     <Compile Include="Assets\Tests\TestMethod.cs" />

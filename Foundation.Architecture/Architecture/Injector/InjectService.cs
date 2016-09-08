@@ -229,7 +229,7 @@ namespace Foundation.Architecture
 
         private static readonly Dictionary<Type, InjectReference> Container = new Dictionary<Type, InjectReference>();
 
-        private static Func<TInstance> DefaultFactory<TInstance>() where TInstance : class, new()
+        private static Func<object> DefaultFactory<TInstance>() where TInstance : class, new()
         {
             return () =>
             {
@@ -239,7 +239,7 @@ namespace Foundation.Architecture
             };
         }
 
-        private static Func<TInstance> DefaultFactory<TInstance>(Func<TInstance> factory) where TInstance : class
+        private static Func<object> DefaultFactory<TInstance>(Func<TInstance> factory) where TInstance : class
         {
             return () =>
             {

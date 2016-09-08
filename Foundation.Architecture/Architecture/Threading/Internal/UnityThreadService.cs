@@ -14,38 +14,45 @@ namespace Foundation.Architecture.Internal
         public class UpdateTask : IDisposable
         {
             public Action<double> Action;
+            public Action<UpdateTask> Cleanup;
 
-            public bool IsDisposed
-            {
-                get { return Action != null; }
-            }
+            public bool IsDisposed;
 
             public void Dispose()
             {
+                Cleanup(this);
+                Cleanup = null;
                 Action = null;
+                IsDisposed = true;
+                //Note : for pooling confirm not used by client and controller. Double Dispose ?
             }
         }
 
         public class RoutineTask : IDisposable
         {
-            public IEnumerator Action;
+            public IEnumerator Routine;
 
-            public bool IsDisposed
-            {
-                get { return Action != null; }
-            }
+            public bool IsDisposed;
 
             public void Dispose()
             {
-                Action = null;
+                Routine = null;
+                IsDisposed = true;
+                //Note : for pooling confirm not used by client and controller. Double Dispose ?
             }
+        }
+
+        public class JobTask
+        {
+            public Action Background;
+            public Action Main;
         }
         #endregion
 
         #region API
         public IDisposable RunUpdate(Action<double> callback)
         {
-            var task = new UpdateTask();
+            var task = new UpdateTask { Cleanup = Remove };
             task.Action = callback;
 
             lock (pendingUpdates)
@@ -57,10 +64,10 @@ namespace Foundation.Architecture.Internal
             return task;
         }
 
-        public IDisposable RunDelay(Action callback, int intervalMs = 5000)
+        public IDisposable RunDelay(Action callback, float seconds = 5)
         {
             var task = new RoutineTask();
-            task.Action = RunDelayAsync(callback, intervalMs, task);
+            task.Routine = RunDelayAsync(callback, seconds, task);
 
             lock (pendingRoutine)
             {
@@ -74,7 +81,7 @@ namespace Foundation.Architecture.Internal
         public void RunRoutine(IEnumerator routine)
         {
             var task = new RoutineTask();
-            task.Action = routine;
+            task.Routine = routine;
 
             lock (pendingRoutine)
             {
@@ -101,7 +108,7 @@ namespace Foundation.Architecture.Internal
 #if USE_THREAD
             lock (pendingBack)
             {
-                pendingBack.Enqueue(action);
+                pendingBack.Enqueue(new JobTask { Background = action });
                 hasBack = true;
             }
 #else
@@ -109,11 +116,25 @@ namespace Foundation.Architecture.Internal
 #endif
         }
 
+        public void RunBackgroundThread(Action bgAction, Action mainAction)
+        {
+#if USE_THREAD
+            lock (pendingBack)
+            {
+                pendingBack.Enqueue(new JobTask { Background = bgAction, Main = mainAction });
+                hasBack = true;
+            }
+#else
+            bgAction();
+            mainAction();
+#endif
+        }
         #endregion
 
         #region Implementation
+
         private static UnityThreadService _instance;
-        [RuntimeInitializeOnLoadMethod]
+        //[RuntimeInitializeOnLoadMethod]
         public static UnityThreadService Init()
         {
             if (_instance == null)
@@ -126,7 +147,7 @@ namespace Foundation.Architecture.Internal
         }
 
         private readonly List<UpdateTask> pendingUpdates = new List<UpdateTask>();
-        private readonly Queue<Action> pendingBack = new Queue<Action>();
+        private readonly Queue<JobTask> pendingBack = new Queue<JobTask>();
         private readonly Queue<Action> pendingMain = new Queue<Action>();
         private readonly Queue<RoutineTask> pendingRoutine = new Queue<RoutineTask>();
 
@@ -134,18 +155,45 @@ namespace Foundation.Architecture.Internal
         private volatile bool hasBack;
         private volatile bool hasMain;
         private volatile bool hasRoutine;
+        private static volatile bool alive;
 
         private DateTime lastUpdate;
 #if USE_THREAD
         private Thread workThread;
+        private Thread mainThread;
+
+        /// <summary>
+        /// Checks if this is the main thread
+        /// </summary>
+        public bool IsMainThread
+        {
+            get { return Thread.CurrentThread == mainThread; }
+        }
+        
+#else
+        /// <summary>
+        /// Checks if this is the main thread
+        /// </summary>
+        public bool IsMainThread
+        {
+            get { return true; }
+        }
 #endif
+
+        void Awake()
+        {
+#if USE_THREAD
+            mainThread = Thread.CurrentThread;
+#endif
+            _instance = this;
+        }
 
         void Start()
         {
 #if USE_THREAD
             workThread = new Thread(() =>
             {
-                while (true)
+                while (alive)
                 {
                     try
                     {
@@ -153,7 +201,10 @@ namespace Foundation.Architecture.Internal
                         {
                             while (pendingBack.Count > 0)
                             {
-                                pendingBack.Dequeue()();
+                                var job = pendingBack.Dequeue();
+                                job.Background();
+                                if (job.Main != null)
+                                    RunMainThread(job.Main);
                             }
                         }
                     }
@@ -161,18 +212,28 @@ namespace Foundation.Architecture.Internal
                     {
                         LogService.LogException("UnityThreadService", ex);
                     }
+
+                    //60 fps
+                    Thread.Sleep(16);
                 }
+
             });
             workThread.IsBackground = true;
             workThread.Start();
 #endif
-            lastUpdate = DateTime.UtcNow;
+            // lastUpdate = DateTime.UtcNow;
+        }
+
+        void OnDestroy()
+        {
+            _instance = null;
+            alive = false;
         }
 
         void Update()
         {
-            var delta = (DateTime.UtcNow - lastUpdate).TotalMilliseconds;
-            lastUpdate = DateTime.UtcNow;
+            // var delta = (DateTime.UtcNow - lastUpdate).TotalMilliseconds;
+            // lastUpdate = DateTime.UtcNow;
 
             if (hasUpdates)
             {
@@ -180,10 +241,11 @@ namespace Foundation.Architecture.Internal
                 {
                     for (int i = 0; i < pendingUpdates.Count; i++)
                     {
-                        pendingUpdates[i].Action(delta);
+                        pendingUpdates[i].Action(Time.deltaTime);
                     }
-                    hasUpdates = false;
+
                 }
+
             }
 
             if (hasMain)
@@ -213,11 +275,12 @@ namespace Foundation.Architecture.Internal
                     {
                         while (pendingRoutine.Count > 0)
                         {
-                            StartCoroutine(pendingRoutine.Dequeue().Action);
+                            StartCoroutine(pendingRoutine.Dequeue().Routine);
 
                             hasRoutine = false;
                         }
                     }
+
                 }
                 catch (Exception ex)
                 {
@@ -226,12 +289,21 @@ namespace Foundation.Architecture.Internal
             }
         }
 
-        IEnumerator RunDelayAsync(Action callback, int intervalMs, RoutineTask task)
+        IEnumerator RunDelayAsync(Action callback, float seconds, RoutineTask task)
         {
-            yield return new WaitForSecondsRealtime(intervalMs);
+            yield return new WaitForSecondsRealtime(seconds);
 
             if (!task.IsDisposed)
                 callback();
+        }
+
+        void Remove(UpdateTask task)
+        {
+            lock (pendingUpdates)
+            {
+                pendingUpdates.Remove(task);
+                hasUpdates = pendingUpdates.Count > 0;
+            }
         }
         #endregion
     }
