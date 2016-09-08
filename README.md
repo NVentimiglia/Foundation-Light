@@ -4,7 +4,7 @@ A Framework level library for client / server development. Built with MSN best p
 
 - **Features**
   - Super light weight, take and use what you need.
-  - Unit tests for everything
+  - **Unit tests** for everything
   - Cross compiles to run in Unity3d, .net45, and DotNetCore.
   - Injector for dependency lookup. Supports transient and singleton.
   - MessageBroker for relaying messages globaly or by Object
