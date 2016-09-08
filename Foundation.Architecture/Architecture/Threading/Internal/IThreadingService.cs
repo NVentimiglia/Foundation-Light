@@ -3,7 +3,7 @@
 using System;
 using System.Collections;
 
-namespace Foundation.Architecture
+namespace Foundation.Architecture.Internal
 {
     /// <summary>
     /// Main thread / Background thread utility

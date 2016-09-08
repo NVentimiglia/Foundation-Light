@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 #endif
 
-namespace Foundation.Architecture
+namespace Foundation.Architecture.Internal
 {
     public class UnityThreadService : MonoBehaviour, IThreadingService
     {

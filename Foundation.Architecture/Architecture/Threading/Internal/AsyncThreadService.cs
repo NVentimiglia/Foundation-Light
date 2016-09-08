@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 
-namespace Foundation.Architecture
+namespace Foundation.Architecture.Internal
 {
     public class AsyncThreadService : IThreadingService
     {
