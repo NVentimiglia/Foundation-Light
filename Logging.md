@@ -3,7 +3,7 @@
 LogService is a light weight wrapper around Console.WriteLine and Debug.Log. It is inteded a a cross platform logging service that can be called on shared code.
 
 ````
-  /// <summary>
+    /// <summary>
     /// Cross platform logging interface
     /// </summary>
     public class LogService
