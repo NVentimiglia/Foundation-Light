@@ -2,8 +2,6 @@
 
 A Framework level library for client / server development. Built with MSN best practices in mind.
 
-**Work in progress**
-
 - **Features**
   - Super light weight, take and use what you need.
   - Unit tests for everything
@@ -15,7 +13,6 @@ A Framework level library for client / server development. Built with MSN best p
   - Observable framework with highly cached proxy layer for MVVM support
   - Cross platform threading, timer, timeout, and coroutine helpers (TODO)
 
-
 [Injector : Service Locator / Inversion of control module](Injector.md) 
 
 [Domain Events : Global Message Broker](DomainEvents.md) 
@@ -23,3 +20,7 @@ A Framework level library for client / server development. Built with MSN best p
 [Object Events : Routed Message broker / SendMessage replacement](ObjectEvents.md) 
 
 [Observables : INotifyPropertyChange and MVVM](Observable.md) 
+
+[Logging : Cross platform debug proxy](Logging.md) 
+
+[Threading : Cross platform timer, update, coroutines and task runniner](Threading.md) 
