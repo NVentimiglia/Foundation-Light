@@ -12,7 +12,7 @@ The threading service is a cross platform service for...
 It is cross platform, so you can have time sensitive logic on your client and server running against this common api.
 
 `````
-/// <summary>
+    /// <summary>
     /// Main thread / Background thread utility
     /// </summary>
     /// <remarks>
