@@ -24,4 +24,5 @@ LogService is a light weight wrapper around Console.WriteLine and Debug.Log. It 
         public static void LogException(Exception ex);
         
         public static void LogException(string message, Exception ex);
+      }
 ````
