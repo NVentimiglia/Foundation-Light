@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -70,7 +71,8 @@ namespace Foundation.Architecture.Tests
         {
             updateCounter = 0;
             ThreadingService.RunRoutine(CoroutineAsync());
-            await Task.Delay(100);
+            await Task.Delay(5000);
+            Console.WriteLine(updateCounter);
             Assert.IsTrue(updateCounter == 5);
         }
 

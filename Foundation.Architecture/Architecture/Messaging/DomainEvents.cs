@@ -74,7 +74,11 @@ namespace Foundation.Architecture
             {
                 var info = typeof(DomainEvents<>).MakeGenericType(messageType);
                 var pType = typeof(Action<object>);
+#if CORE
+                var func = info.GetMethod("Publish").CreateDelegate(pType, null);
+#else
                 var func = Delegate.CreateDelegate(pType, info, "Publish");
+#endif
                 _cache.Add(messageType, func);
             }
 

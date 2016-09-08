@@ -6,7 +6,9 @@ obj
 packages/
 
 # TODO NUGET
-!/packages/UnityEngine
+!/packages/UnityEngine.dll
+!/packages/UnityEngine.dll.mdb
+!/packages/UnityEngine.xml
 Foundation.Architecture/TestResults/
 Foundation.Unity/Library/
 Foundation.Unity/Temp/

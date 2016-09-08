@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY
+using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
@@ -308,3 +309,4 @@ namespace Foundation.Architecture.Internal
         #endregion
     }
 }
+#endif

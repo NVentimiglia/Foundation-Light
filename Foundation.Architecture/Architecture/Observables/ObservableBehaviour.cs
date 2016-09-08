@@ -1,3 +1,4 @@
+#if UNITY
 // Nicholas Ventimiglia 2016-09-05
 
 using UnityEngine;
@@ -17,3 +18,4 @@ namespace Foundation.Architecture
         }
     }
 }
+#endif

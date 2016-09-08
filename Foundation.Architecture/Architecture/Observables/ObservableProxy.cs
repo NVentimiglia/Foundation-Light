@@ -103,7 +103,7 @@ namespace Foundation.Architecture
             }
             catch (Exception ex)
             {
-                LogService.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " +value.GetType().Name);
+                LogService.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " + value.GetType().Name);
                 LogService.LogException(ex);
             }
         }
@@ -166,13 +166,13 @@ namespace Foundation.Architecture
 
                 if (ptype.Length == 0)
                 {
-                    var del = Delegate.CreateDelegate(typeof(Action), Instance, member.Name);
+                    var del = CreateDelegate(typeof(Action), Instance, member);
                     _cacheSet.Add(member.Name, del);
                 }
                 else
                 {
                     var type = typeof(Action<>).MakeGenericType(ptype[0].ParameterType);
-                    var del = Delegate.CreateDelegate(type, Instance, member.Name);
+                    var del = CreateDelegate(type, Instance, member);
                     _cacheSet.Add(member.Name, del);
                 }
             }
@@ -191,11 +191,11 @@ namespace Foundation.Architecture
                 }
 
                 var gtype = typeof(Func<>).MakeGenericType(member.PropertyType);
-                var get = Delegate.CreateDelegate(gtype, Instance, member.GetGetMethod());
+                var get = CreateDelegate(gtype, Instance, member.GetGetMethod());
                 _cacheGet.Add(member.Name, get);
 
                 var stype = typeof(Action<>).MakeGenericType(member.PropertyType);
-                var set = Delegate.CreateDelegate(stype, Instance, member.GetSetMethod());
+                var set = CreateDelegate(stype, Instance, member.GetSetMethod());
                 _cacheSet.Add(member.Name, set);
             }
         }
@@ -219,11 +219,11 @@ namespace Foundation.Architecture
                 var otype = member.FieldType.GetGenericArguments()[0];
 
                 var gtype = typeof(Func<>).MakeGenericType(otype);
-                var get = Delegate.CreateDelegate(gtype, obs, obs.GetType().GetMethod("Get"));
+                var get = CreateDelegate(gtype, obs, obs.GetType().GetMethod("Get"));
                 _cacheGet.Add(member.Name, get);
 
                 var stype = typeof(Action<>).MakeGenericType(otype);
-                var set = Delegate.CreateDelegate(stype, obs, obs.GetType().GetMethod("Set"));
+                var set = CreateDelegate(stype, obs, obs.GetType().GetMethod("Set"));
                 _cacheSet.Add(member.Name, set);
 
                 var einfo = obs.GetType().GetEvent("OnChange");
@@ -235,6 +235,14 @@ namespace Foundation.Architecture
             }
         }
 
+        Delegate CreateDelegate(Type type, Object target, MethodInfo method)
+        {
+#if CORE
+            return method.CreateDelegate(type, target);
+#else
+               return Delegate.CreateDelegate(type, target, method);
+#endif
+        }
 
         public void RaisePropertyChanged(string memberName)
         {

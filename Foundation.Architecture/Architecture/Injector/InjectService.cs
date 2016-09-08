@@ -179,12 +179,20 @@ namespace Foundation.Architecture
         /// <param name="instance">the instance to find dependencies for</param>
         public static void InjectInto(object instance)
         {
-            //TODO Reflector Cache
+#if CORE
+            var allFields = instance
+                .GetType()
+                .GetTypeInfo()
+                .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(o => o.GetCustomAttributes(typeof(InjectAttribute),true).Count() > 0)
+                .ToArray();
+#else
             var allFields = instance
                 .GetType()
                 .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(o => o.GetCustomAttributes(typeof(InjectAttribute), true).Length > 0)
                 .ToArray();
+#endif
 
             FieldInfo field = null;
 

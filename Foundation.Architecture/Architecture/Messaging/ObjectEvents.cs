@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Foundation.Architecture
 {
@@ -115,7 +116,12 @@ namespace Foundation.Architecture
             {
                 var info = typeof(ObjectEvents<,>).MakeGenericType(routeType, messageType);
                 var pType = typeof(Action<object, object>);
+
+#if CORE
+                var func = info.GetMethod("Publish").CreateDelegate(pType, null);
+#else
                 var func = Delegate.CreateDelegate(pType, info, "Publish");
+#endif
                 inner.Add(messageType, func);
             }
 
