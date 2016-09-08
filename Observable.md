@@ -50,5 +50,5 @@ here are my current stats for calling a method 1000 times. Time is in StopWatch 
  - Normal 81
  - Reflected 1088
  - Cached 82
- - Proxy 182 (Technically 2 method calls, one to proxy, one to instance)
+ - Proxy 182 ( 2 method calls + dictionary lookup. one to proxy, one to instance)
             
