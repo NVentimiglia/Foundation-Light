@@ -13,13 +13,12 @@ namespace Foundation.Architecture.Internal
             public void Dispose()
             {
                 IsDisposed = true;
-                ThreadSafePool<ThreadTask>.Default.Return(this);
             }
         }
 
         public IDisposable RunUpdate(Action<double> callback)
         {
-            var task = ThreadSafePool<ThreadTask>.Default.Rent();
+            var task = new ThreadTask();
             task.IsDisposed = false;
             RunUpdate(callback, task);
             return task;
@@ -27,7 +26,7 @@ namespace Foundation.Architecture.Internal
         
         public IDisposable RunDelay(Action callback, int intervalMs = 5000)
         {
-            var task = ThreadSafePool<ThreadTask>.Default.Rent();
+            var task = new ThreadTask();
             task.IsDisposed = false;
             RunUpdate(callback, intervalMs, task);
             return task;

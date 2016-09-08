@@ -8,7 +8,7 @@ namespace Foundation.Architecture
     /// <summary>
     /// Cross platform logging interface
     /// </summary>
-    public class Logger
+    public class LogService
     {
         /// <summary>
         ///  extensibility point

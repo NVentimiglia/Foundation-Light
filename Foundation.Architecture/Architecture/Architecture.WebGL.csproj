@@ -4,20 +4,21 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F38F800F-D4D8-48E4-9A2C-B0518BE831CB}</ProjectGuid>
+    <ProjectGuid>{7238EC8C-9378-4369-BEA9-07D774F6C104}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Foundation.Architecture</RootNamespace>
-    <AssemblyName>Foundation.Architecture</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <AssemblyName>Foundation.Architecture.WebGL</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -31,52 +32,39 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\UnityEngine\UnityEngine.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\BufferExt.cs" />
     <Compile Include="Data\BufferHelper.cs" />
+    <Compile Include="Data\JsonHelper.cs" />
     <Compile Include="Injector\InjectAttribute.cs" />
     <Compile Include="Injector\InjectService.cs" />
-    <Compile Include="Logging\LogService.cs" />
     <Compile Include="Logging\LogModel.cs" />
-    <Compile Include="Messaging\ObjectEvents.cs" />
+    <Compile Include="Logging\LogService.Unity3d.cs" />
     <Compile Include="Messaging\DomainEvents.cs" />
+    <Compile Include="Messaging\ObjectEvents.cs" />
     <Compile Include="Observables\IPropertyChanged.cs" />
     <Compile Include="Observables\Observable.cs" />
+    <Compile Include="Observables\ObservableBehaviour.cs" />
     <Compile Include="Observables\ObservableCollection.cs" />
     <Compile Include="Observables\ObservableObject.cs" />
     <Compile Include="Observables\ObservableProxy.cs" />
-    <Compile Include="Pooling\ThreadSafePool.cs" />
     <Compile Include="Pooling\Pool.cs" />
+    <Compile Include="Pooling\ThreadSafePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Data\JsonHelper.cs" />
-    <Compile Include="Threading\AsyncLock.cs" />
-    <Compile Include="Threading\AsyncSemaphore.cs" />
-    <Compile Include="Threading\Internal\AsyncThreadService.cs" />
     <Compile Include="Threading\Internal\IThreadingService.cs" />
+    <Compile Include="Threading\Internal\ThreadService.Unity3d.cs" />
     <Compile Include="Threading\RoutineTimer.cs" />
     <Compile Include="Threading\ThreadingService.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>echo f | xcopy "$(TargetDir)Foundation.Architecture.WebGL.dll" "$(SolutionDir)..\Foundation.Unity\Assets\Plugins\Foundation.Architecture.WebGL.dll"  /D /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

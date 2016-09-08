@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 #if UNITY
 using UnityEngine;
-
 #endif
 
 namespace Foundation.Architecture
@@ -15,7 +14,7 @@ namespace Foundation.Architecture
     /// For controllers with an observable model. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Serializable]
+   // WEBGL [Serializable]
     public class ObservableCollection<T> : IEnumerable<T>
     {
         public enum CollectionEvent

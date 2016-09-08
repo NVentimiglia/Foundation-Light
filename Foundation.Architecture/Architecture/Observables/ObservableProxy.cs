@@ -72,13 +72,13 @@ namespace Foundation.Architecture
                 {
                     return (temp as Func<T>).Invoke();
                 }
-                Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+                LogService.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
                 return default(T);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with void");
-                Logger.LogException(ex);
+                LogService.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with void");
+                LogService.LogException(ex);
 
                 return default(T);
             }
@@ -98,13 +98,13 @@ namespace Foundation.Architecture
                 }
                 else
                 {
-                    Logger.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+                    LogService.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " +value.GetType().Name);
-                Logger.LogException(ex);
+                LogService.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " +value.GetType().Name);
+                LogService.LogException(ex);
             }
         }
 
@@ -122,13 +122,13 @@ namespace Foundation.Architecture
                 }
                 else
                 {
-                    Logger.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
+                    LogService.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to call member " + memberName + " of void " + " on " + InstanceType.Name);
-                Logger.LogException(ex);
+                LogService.LogError("Failed to call member " + memberName + " of void " + " on " + InstanceType.Name);
+                LogService.LogException(ex);
             }
         }
 
@@ -154,7 +154,7 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name))
                 {
-                    Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+                    LogService.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
 
                     continue;
                 }
@@ -186,7 +186,7 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
-                    Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+                    LogService.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
                     continue;
                 }
 
@@ -210,7 +210,7 @@ namespace Foundation.Architecture
             {
                 if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
                 {
-                    Logger.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
+                    LogService.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
 
                     continue;
                 }

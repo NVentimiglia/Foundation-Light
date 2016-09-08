@@ -9,3 +9,8 @@ packages/
 # TODO NUGET
 !/packages/UnityEngine
 Foundation.Architecture/TestResults/
+Foundation.Unity/Library/
+Foundation.Unity/Temp/
+Foundation.Unity/Assets/UnityTestTools/Assertions/
+Foundation.Unity/ProjectSettings/
+Foundation.Unity/Assets/UnityTestTools/

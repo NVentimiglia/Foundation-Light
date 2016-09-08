@@ -23,7 +23,6 @@ namespace Foundation.Architecture.Internal
             public void Dispose()
             {
                 Action = null;
-                ThreadSafePool<UpdateTask>.Default.Return(this);
             }
         }
 
@@ -39,7 +38,6 @@ namespace Foundation.Architecture.Internal
             public void Dispose()
             {
                 Action = null;
-                ThreadSafePool<RoutineTask>.Default.Return(this);
             }
         }
         #endregion
@@ -47,7 +45,7 @@ namespace Foundation.Architecture.Internal
         #region API
         public IDisposable RunUpdate(Action<double> callback)
         {
-            var task = ThreadSafePool<UpdateTask>.Default.Rent();
+            var task = new UpdateTask();
             task.Action = callback;
 
             lock (pendingUpdates)
@@ -61,7 +59,7 @@ namespace Foundation.Architecture.Internal
 
         public IDisposable RunDelay(Action callback, int intervalMs = 5000)
         {
-            var task = ThreadSafePool<RoutineTask>.Default.Rent();
+            var task = new RoutineTask();
             task.Action = RunDelayAsync(callback, intervalMs, task);
 
             lock (pendingRoutine)
@@ -75,7 +73,7 @@ namespace Foundation.Architecture.Internal
 
         public void RunRoutine(IEnumerator routine)
         {
-            var task = ThreadSafePool<RoutineTask>.Default.Rent();
+            var task = new RoutineTask();
             task.Action = routine;
 
             lock (pendingRoutine)
@@ -87,26 +85,35 @@ namespace Foundation.Architecture.Internal
 
         public void RunMainThread(Action action)
         {
+#if USE_THREAD
             lock (pendingMain)
             {
                 pendingMain.Enqueue(action);
                 hasMain = true;
             }
+#else
+            action();
+#endif
         }
 
         public void RunBackgroundThread(Action action)
         {
+#if USE_THREAD
             lock (pendingBack)
             {
                 pendingBack.Enqueue(action);
                 hasBack = true;
             }
+#else
+            action();
+#endif
         }
 
         #endregion
 
         #region Implementation
         private static UnityThreadService _instance;
+        [RuntimeInitializeOnLoadMethod]
         public static UnityThreadService Init()
         {
             if (_instance == null)
@@ -152,7 +159,7 @@ namespace Foundation.Architecture.Internal
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogException("UnityThreadService", ex);
+                        LogService.LogException("UnityThreadService", ex);
                     }
                 }
             });
@@ -164,7 +171,7 @@ namespace Foundation.Architecture.Internal
 
         void Update()
         {
-            var delta = DateTime.UtcNow - lastUpdate;
+            var delta = (DateTime.UtcNow - lastUpdate).TotalMilliseconds;
             lastUpdate = DateTime.UtcNow;
 
             if (hasUpdates)
@@ -173,7 +180,7 @@ namespace Foundation.Architecture.Internal
                 {
                     for (int i = 0; i < pendingUpdates.Count; i++)
                     {
-                        pendingUpdates[i].Action(Time.deltaTime);
+                        pendingUpdates[i].Action(delta);
                     }
                     hasUpdates = false;
                 }
@@ -194,7 +201,7 @@ namespace Foundation.Architecture.Internal
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogException("UnityThreadService.pendingMain", ex);
+                    LogService.LogException("UnityThreadService.pendingMain", ex);
                 }
             }
 
@@ -214,7 +221,7 @@ namespace Foundation.Architecture.Internal
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogException("UnityThreadService.pendingRoutine", ex);
+                    LogService.LogException("UnityThreadService.pendingRoutine", ex);
                 }
             }
         }
