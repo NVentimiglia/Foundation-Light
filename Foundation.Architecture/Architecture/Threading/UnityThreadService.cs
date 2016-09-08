@@ -1,118 +1,231 @@
-﻿//using System;
-//using System.Collections;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
+﻿using System;
+using System.Collections;
+using UnityEngine;
+using System.Collections.Generic;
+#if USE_THREAD
+using System.Threading;
+#endif
 
+namespace Foundation.Architecture
+{
+    public class UnityThreadService : MonoBehaviour, IThreadingService
+    {
+        #region Defines
+        public class UpdateTask : IDisposable
+        {
+            public Action<double> Action;
 
-//namespace Foundation.Architecture
-//{
-//    public class UnityThreadService : IThreadingService
-//    {
-//        public struct ThreadTask : IDisposable
-//        {
-//            public bool IsDisposed;
+            public bool IsDisposed
+            {
+                get { return Action != null; }
+            }
 
-//            public void Dispose()
-//            {
-//                IsDisposed = true;
-//            }
-//        }
+            public void Dispose()
+            {
+                Action = null;
+                ThreadSafePool<UpdateTask>.Default.Return(this);
+            }
+        }
 
-//        public IDisposable RunUpdate(Action<double> callback)
-//        {
-//            var task = new ThreadTask();
-//            RunUpdate(callback, task);
-//            return task;
-//        }
+        public class RoutineTask : IDisposable
+        {
+            public IEnumerator Action;
 
-//        async void RunUpdate(Action<double> callback, ThreadTask task)
-//        {
-//            var startTime = DateTime.UtcNow;
-//            double delta = 0;
+            public bool IsDisposed
+            {
+                get { return Action != null; }
+            }
 
-//            while (!task.IsDisposed)
-//            {
-//                //60 fps
-//                //await Task.Delay(16);
-//                delta = (DateTime.UtcNow - startTime).TotalMilliseconds;
-//                startTime = DateTime.UtcNow;
-//                callback(delta);
-//            }
-//        }
+            public void Dispose()
+            {
+                Action = null;
+                ThreadSafePool<RoutineTask>.Default.Return(this);
+            }
+        }
+        #endregion
 
+        #region API
+        public IDisposable RunUpdate(Action<double> callback)
+        {
+            var task = ThreadSafePool<UpdateTask>.Default.Rent();
+            task.Action = callback;
 
-//        public IDisposable RunDelay(Action callback, int intervalMs = 5000)
-//        {
-//            var task = new ThreadTask();
-//            RunUpdate(callback, intervalMs, task);
-//            return task;
-//        }
+            lock (pendingUpdates)
+            {
+                pendingUpdates.Add(task);
+                hasUpdates = true;
+            }
 
-//        void RunUpdate(Action callback, int intervalMs, ThreadTask task)
-//        {
-//            //await Task.Delay(intervalMs);
+            return task;
+        }
 
-//            if (!task.IsDisposed)
-//            {
-//                callback();
-//            }
-//        }
+        public IDisposable RunDelay(Action callback, int intervalMs = 5000)
+        {
+            var task = ThreadSafePool<RoutineTask>.Default.Rent();
+            task.Action = RunDelayAsync(callback, intervalMs, task);
 
-//        public IDisposable RunRoutine(IEnumerator routine)
-//        {
-//            var task = new ThreadTask();
-//            RunRoutine(routine, task);
-//            return task;
-//        }
+            lock (pendingRoutine)
+            {
+                pendingRoutine.Enqueue(task);
+                hasRoutine = true;
+            }
 
-//        async void RunRoutine(IEnumerator routine, ThreadTask task)
-//        {
-//            do
-//            {
-//                if (task.IsDisposed)
-//                    return;
+            return task;
+        }
 
-//                //60 fps
-//             //   await Task.Delay(16);
+        public void RunRoutine(IEnumerator routine)
+        {
+            var task = ThreadSafePool<RoutineTask>.Default.Rent();
+            task.Action = routine;
 
-//            } while (routine.MoveNext());
-//        }
+            lock (pendingRoutine)
+            {
+                pendingRoutine.Enqueue(task);
+                hasRoutine = true;
+            }
+        }
 
+        public void RunMainThread(Action action)
+        {
+            lock (pendingMain)
+            {
+                pendingMain.Enqueue(action);
+                hasMain = true;
+            }
+        }
 
-//        public IDisposable RunRoutine(Func<IEnumerator> routine)
-//        {
-//            var task = new ThreadTask();
-//            RunRoutine(routine, task);
-//            return task;
-//        }
+        public void RunBackgroundThread(Action action)
+        {
+            lock (pendingBack)
+            {
+                pendingBack.Enqueue(action);
+                hasBack = true;
+            }
+        }
 
-//        async void RunRoutine(Func<IEnumerator> func, ThreadTask task)
-//        {
-//            var routine = func();
+        #endregion
 
-//            do
-//            {
-//                if (task.IsDisposed)
-//                    return;
+        #region Implementation
+        private static UnityThreadService _instance;
+        public static UnityThreadService Init()
+        {
+            if (_instance == null)
+            {
+                var go = new GameObject("_UnityThreadService");
+                DontDestroyOnLoad(go);
+                _instance = go.AddComponent<UnityThreadService>();
+            }
+            return _instance;
+        }
 
-//                //60 fps
-//                await Task.Delay(16);
+        private readonly List<UpdateTask> pendingUpdates = new List<UpdateTask>();
+        private readonly Queue<Action> pendingBack = new Queue<Action>();
+        private readonly Queue<Action> pendingMain = new Queue<Action>();
+        private readonly Queue<RoutineTask> pendingRoutine = new Queue<RoutineTask>();
 
-//            } while (routine.MoveNext());
-//        }
+        private volatile bool hasUpdates;
+        private volatile bool hasBack;
+        private volatile bool hasMain;
+        private volatile bool hasRoutine;
 
-//        public void RunMainThread(Action action)
-//        {
-//            //NotImplemented
-//            action();
-//        }
+        private DateTime lastUpdate;
+#if USE_THREAD
+        private Thread workThread;
+#endif
 
-//        public void RunBackgroundThread(Action action)
-//        {
-//            //NotImplemented
-//            action();
-//        }
+        void Start()
+        {
+#if USE_THREAD
+            workThread = new Thread(() =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        lock (pendingBack)
+                        {
+                            while (pendingBack.Count > 0)
+                            {
+                                pendingBack.Dequeue()();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException("UnityThreadService", ex);
+                    }
+                }
+            });
+            workThread.IsBackground = true;
+            workThread.Start();
+#endif
+            lastUpdate = DateTime.UtcNow;
+        }
 
-//    }
-//}
+        void Update()
+        {
+            var delta = DateTime.UtcNow - lastUpdate;
+            lastUpdate = DateTime.UtcNow;
+
+            if (hasUpdates)
+            {
+                lock (pendingUpdates)
+                {
+                    for (int i = 0; i < pendingUpdates.Count; i++)
+                    {
+                        pendingUpdates[i].Action(Time.deltaTime);
+                    }
+                    hasUpdates = false;
+                }
+            }
+
+            if (hasMain)
+            {
+                try
+                {
+                    lock (pendingMain)
+                    {
+                        while (pendingMain.Count > 0)
+                        {
+                            pendingMain.Dequeue()();
+                        }
+                        hasMain = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException("UnityThreadService.pendingMain", ex);
+                }
+            }
+
+            if (hasRoutine)
+            {
+                try
+                {
+                    lock (pendingRoutine)
+                    {
+                        while (pendingRoutine.Count > 0)
+                        {
+                            StartCoroutine(pendingRoutine.Dequeue().Action);
+
+                            hasRoutine = false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException("UnityThreadService.pendingRoutine", ex);
+                }
+            }
+        }
+
+        IEnumerator RunDelayAsync(Action callback, int intervalMs, RoutineTask task)
+        {
+            yield return new WaitForSecondsRealtime(intervalMs);
+
+            if (!task.IsDisposed)
+                callback();
+        }
+        #endregion
+    }
+}

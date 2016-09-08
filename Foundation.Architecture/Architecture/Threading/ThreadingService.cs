@@ -12,7 +12,7 @@ namespace Foundation.Architecture
     public static class ThreadingService
     {
 #if UNITY
-        static readonly IThreadingService Instance;//= new UnityThreadService();
+        static readonly IThreadingService Instance = UnityThreadService.Init();
 #else
         static readonly IThreadingService Instance = new AsyncThreadService();
 #endif
@@ -27,8 +27,6 @@ namespace Foundation.Architecture
             return Instance.RunUpdate(callback);
         }
 
-        //
-
         /// <summary>
         /// Registers a timeout (Wait and Invoke)
         /// </summary>
@@ -36,43 +34,15 @@ namespace Foundation.Architecture
         {
             return Instance.RunDelay(callback, intervalMs);
         }
-
-        /// <summary>
-        /// Registers a timeout (Wait and Invoke)
-        /// </summary>
-        public static IDisposable RunDelay<TState>(Action<TState> callback, TState state, int intervalMs = 5000)
-        {
-            return Instance.RunDelay(callback, state, intervalMs);
-        }
-
-        //
-
+      
         /// <summary>
         /// A Coroutine. Like an Update Loop, but, execution broken up by yields
         /// </summary>
-        public static IDisposable RunRoutine(IEnumerator routine)
+        public static void RunRoutine(IEnumerator routine)
         {
-            return Instance.RunRoutine(routine);
+            Instance.RunRoutine(routine);
         }
-
-        /// <summary>
-        /// A Coroutine. Like an Update Loop, but, execution broken up by yields
-        /// </summary>
-        public static IDisposable RunRoutine(Func<IEnumerator> routine)
-        {
-            return Instance.RunRoutine(routine);
-        }
-
-        /// <summary>
-        /// A Coroutine. Like an Update Loop, but, execution broken up by yields
-        /// </summary>
-        public static IDisposable RunRoutine<TState>(Func<TState, IEnumerator> routine, TState state) 
-        {
-            return Instance.RunRoutine(routine, state);
-        }
-
-        //
-
+        
         /// <summary>
         /// Executes an action on the main thread
         /// </summary>
@@ -80,31 +50,13 @@ namespace Foundation.Architecture
         {
             Instance.RunDelay(action);
         }
-
-        /// <summary>
-        /// Executes an action on the main thread
-        /// </summary>
-        public static void RunMainThread<TState>(Action<TState> action, TState state)
-        {
-            Instance.RunMainThread(action, state);
-        }
-
-        //
-
+        
         /// <summary>
         /// Executes an action on the background thread (if possible - webGl)
         /// </summary>
         public static void RunBackgroundThread(Action action)
         {
             Instance.RunBackgroundThread(action);
-        }
-
-        /// <summary>
-        /// Executes an action on the background thread (if possible - webGl)
-        /// </summary>
-        public static void RunBackgroundThread<TState>(Action<TState> action, TState state)
-        {
-            Instance.RunBackgroundThread(action, state);
         }
     }
 }
