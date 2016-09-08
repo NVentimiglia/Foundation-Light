@@ -58,10 +58,10 @@ namespace Foundation.Architecture.Internal
             while (!task.IsDisposed)
             {
                 //60 fps
-                await Task.Delay(16);
                 delta = (DateTime.UtcNow - startTime).TotalMilliseconds;
                 startTime = DateTime.UtcNow;
                 callback(delta);
+                await Task.Delay(16);
             }
         }
 

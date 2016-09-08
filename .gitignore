@@ -8,3 +8,4 @@ packages/
 
 # TODO NUGET
 !/packages/UnityEngine
+Foundation.Architecture/TestResults/

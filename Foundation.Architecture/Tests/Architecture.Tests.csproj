@@ -55,6 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BufferHelperTests.cs" />
+    <Compile Include="ThreadingTests.cs" />
     <Compile Include="ObservableTests.cs" />
     <Compile Include="ObjectEventsTest.cs" />
     <Compile Include="DomainEventsTest.cs" />
