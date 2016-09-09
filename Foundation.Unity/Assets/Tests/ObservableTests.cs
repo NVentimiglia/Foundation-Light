@@ -11,6 +11,19 @@ public class ObservableTests : MonoBehaviour
     {
         public Observable<int> MyObservable = new Observable<int>();
 
+        private string _myProperty2;
+        public string MyProperty2
+        {
+            get { return _myProperty2; }
+            set
+            {
+                if (_myProperty2 == value)
+                    return;
+                _myProperty2 = value;
+                RaisePropertyChanged("MyProperty2");
+            }
+        }
+
         private int _myProperty;
         public int MyProperty
         {
@@ -115,20 +128,20 @@ public class ObservableTests : MonoBehaviour
             counter2++;
         };
 
-        proxy.Invoke("MyCommand");
+        proxy.Post("MyCommand");
         Assert.AreEqual(vm.MyProperty, 1);
 
-        proxy.Set("MyCommand2", 2);
+        proxy.Post("MyCommand2", 2);
         Assert.AreEqual(vm.MyProperty, 3);
 
-        proxy.Set("MyProperty", 0);
+        proxy.Post("MyProperty", 0);
         Assert.AreEqual(vm.MyProperty, 0);
 
         Assert.AreEqual(counter1, 3);
         Assert.AreEqual(counter2, 3);
 
 
-        proxy.Set("MyObservable", 3);
+        proxy.Post("MyObservable", 3);
         Assert.AreEqual(proxy.Get<int>("MyObservable"), 3);
         Assert.AreEqual(counter2, 4);
 
@@ -155,6 +168,43 @@ public class ObservableTests : MonoBehaviour
 
         Assert.AreEqual(vm.MyObservable, 5);
         Assert.AreEqual(counter1, 1);
+    }
+    [TestMethod]
+    public void TestConversion()
+    {
+        var vm = new ViewModel();
+        var proxy = new ObservableProxy(vm);
+        int counter2 = 0;
+        int counter1 = 0;
+
+        vm.OnPropertyChanged += (name) =>
+        {
+            counter1++;
+        };
+
+        proxy.OnPropertyChanged += (name) =>
+        {
+            counter2++;
+        };
+
+        proxy.Post("MyCommand");
+        Assert.AreEqual(vm.MyProperty, 1);
+
+        proxy.Post("MyCommand2", "2");
+        Assert.AreEqual(vm.MyProperty, 3);
+
+        proxy.Post("MyProperty", 0f);
+        Assert.AreEqual(vm.MyProperty, 0);
+
+        Assert.AreEqual(counter1, 3);
+        Assert.AreEqual(counter2, 3);
+
+
+        proxy.Post("MyProperty2", "1");
+        var temp = proxy.Get<int>("MyProperty2");
+        Assert.AreEqual(temp, 1);
+
+        proxy.Dispose();
     }
 
     [TestMethod]
@@ -186,7 +236,7 @@ public class ObservableTests : MonoBehaviour
             watch.Start();
             for (int i = 0; i < 1000; i++)
             {
-                proxy.Invoke("MyCommand");
+                proxy.Post("MyCommand");
             }
             watch.Stop();
             testProxy = watch.ElapsedTicks;

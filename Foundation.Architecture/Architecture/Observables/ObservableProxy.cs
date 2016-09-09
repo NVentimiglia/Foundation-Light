@@ -12,6 +12,19 @@ namespace Foundation.Architecture
     /// </summary>
     public class ObservableProxy : IPropertyChanged, IDisposable
     {
+        public struct DelegateInfo
+        {
+            public Delegate Delegate;
+            public Type Type;
+
+            public DelegateInfo(Delegate d, Type t)
+            {
+                Delegate = d;
+                Type = t;
+            }
+        }
+
+
         public object Instance { get; private set; }
         public Type InstanceType { get; private set; }
 
@@ -20,9 +33,9 @@ namespace Foundation.Architecture
 
         //
 
-        private Dictionary<string, Delegate> _cacheGet = new Dictionary<string, Delegate>();
-        private Dictionary<string, Delegate> _cacheSet = new Dictionary<string, Delegate>();
-        private Dictionary<object, Action> _cacheObs = new Dictionary<object, Action>();
+        private Dictionary<string, DelegateInfo> _cacheGet = new Dictionary<string, DelegateInfo>();
+        private Dictionary<string, DelegateInfo> _cacheSet = new Dictionary<string, DelegateInfo>();
+        private Dictionary<object, DelegateInfo> _cacheObs = new Dictionary<object, DelegateInfo>();
 
         //
 
@@ -52,7 +65,7 @@ namespace Foundation.Architecture
             foreach (var cacheOb in _cacheObs)
             {
                 var einfo = cacheOb.Key.GetType().GetEvent("OnChange");
-                einfo.RemoveEventHandler(cacheOb.Key, cacheOb.Value);
+                einfo.RemoveEventHandler(cacheOb.Key, cacheOb.Value.Delegate);
             }
 
             _cacheGet.Clear();
@@ -67,10 +80,11 @@ namespace Foundation.Architecture
         {
             try
             {
-                Delegate temp;
+                DelegateInfo temp;
                 if (_cacheGet.TryGetValue(memberName, out temp))
                 {
-                    return (temp as Func<T>).Invoke();
+                    var val = (temp.Delegate).DynamicInvoke();
+                    return (T)Convert(val, typeof(T));
                 }
                 LogService.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
                 return default(T);
@@ -87,52 +101,45 @@ namespace Foundation.Architecture
         /// <summary>
         /// Call a member
         /// </summary>
-        public void Set<T>(string memberName, T value)
+        public void Post(string memberName, object value = null)
         {
             try
             {
-                Delegate temp;
+                DelegateInfo temp;
                 if (_cacheSet.TryGetValue(memberName, out temp))
                 {
-                    (temp as Action<T>).Invoke(value);
+                    if (value == null)
+                    {
+                        (temp.Delegate as Action).Invoke();
+                    }
+                    else
+                    {
+                        (temp.Delegate).DynamicInvoke(Convert(value, temp.Type));
+                    }
                 }
                 else
                 {
-                    LogService.LogWarning("Unknown member " + memberName + " of " + typeof(T).Name + " on " + InstanceType.Name);
+                    LogService.LogWarning("Unknown member " + memberName + " on " + InstanceType.Name);
                 }
             }
             catch (Exception ex)
             {
-                LogService.LogError("Failed to call member " + memberName + " of " + typeof(T).Name + " with " + value.GetType().Name);
+                LogService.LogError("Failed to call member " + memberName + " on " + InstanceType.Name);
                 LogService.LogException(ex);
             }
         }
 
-        /// <summary>
-        /// Call a member
-        /// </summary>
-        public void Invoke(string memberName)
-        {
-            try
-            {
-                Delegate temp;
-                if (_cacheSet.TryGetValue(memberName, out temp))
-                {
-                    (temp as Action).Invoke();
-                }
-                else
-                {
-                    LogService.LogWarning("Unknown member " + memberName + " of void " + " on " + InstanceType.Name);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogService.LogError("Failed to call member " + memberName + " of void " + " on " + InstanceType.Name);
-                LogService.LogException(ex);
-            }
-        }
 
         // 
+
+
+        object Convert(object value, Type type)
+        {
+            if (type == null || value == null  || value.GetType() == type)
+                return value;
+
+            return System.Convert.ChangeType(value, type);
+        }
 
         void BuildCache()
         {
@@ -167,13 +174,13 @@ namespace Foundation.Architecture
                 if (ptype.Length == 0)
                 {
                     var del = CreateDelegate(typeof(Action), Instance, member);
-                    _cacheSet.Add(member.Name, del);
+                    _cacheSet.Add(member.Name, new DelegateInfo(del, null));
                 }
                 else
                 {
                     var type = typeof(Action<>).MakeGenericType(ptype[0].ParameterType);
                     var del = CreateDelegate(type, Instance, member);
-                    _cacheSet.Add(member.Name, del);
+                    _cacheSet.Add(member.Name, new DelegateInfo(del, ptype[0].ParameterType));
                 }
             }
         }
@@ -192,11 +199,11 @@ namespace Foundation.Architecture
 
                 var gtype = typeof(Func<>).MakeGenericType(member.PropertyType);
                 var get = CreateDelegate(gtype, Instance, member.GetGetMethod());
-                _cacheGet.Add(member.Name, get);
+                _cacheGet.Add(member.Name, new DelegateInfo(get, member.PropertyType));
 
                 var stype = typeof(Action<>).MakeGenericType(member.PropertyType);
                 var set = CreateDelegate(stype, Instance, member.GetSetMethod());
-                _cacheSet.Add(member.Name, set);
+                _cacheSet.Add(member.Name, new DelegateInfo(set, member.PropertyType));
             }
         }
 
@@ -220,18 +227,21 @@ namespace Foundation.Architecture
 
                 var gtype = typeof(Func<>).MakeGenericType(otype);
                 var get = CreateDelegate(gtype, obs, obs.GetType().GetMethod("Get"));
-                _cacheGet.Add(member.Name, get);
+                _cacheGet.Add(member.Name, new DelegateInfo(get, otype));
 
                 var stype = typeof(Action<>).MakeGenericType(otype);
                 var set = CreateDelegate(stype, obs, obs.GetType().GetMethod("Set"));
-                _cacheSet.Add(member.Name, set);
+                _cacheSet.Add(member.Name, new DelegateInfo(set, otype));
 
                 var einfo = obs.GetType().GetEvent("OnChange");
 
-                Action handler = () => { RaisePropertyChanged(member.Name); };
+                Action handler = () =>
+                {
+                    RaisePropertyChanged(member.Name);
+                };
 
                 einfo.AddEventHandler(obs, handler);
-                _cacheObs.Add(obs, handler);
+                _cacheObs.Add(obs, new DelegateInfo(handler, otype));
             }
         }
 
@@ -240,7 +250,7 @@ namespace Foundation.Architecture
 #if CORE
             return method.CreateDelegate(type, target);
 #else
-               return Delegate.CreateDelegate(type, target, method);
+            return Delegate.CreateDelegate(type, target, method);
 #endif
         }
 
