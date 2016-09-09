@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Foundation.Architecture;
 using UnityEngine;
 
@@ -9,8 +11,6 @@ public class ObservableTests : MonoBehaviour
 {
     public class ViewModel : ObservableObject
     {
-        public Observable<int> MyObservable = new Observable<int>();
-
         private string _myProperty2;
         public string MyProperty2
         {
@@ -20,7 +20,7 @@ public class ObservableTests : MonoBehaviour
                 if (_myProperty2 == value)
                     return;
                 _myProperty2 = value;
-                RaisePropertyChanged("MyProperty2");
+                RaiseChange("MyProperty2", value);
             }
         }
 
@@ -33,7 +33,7 @@ public class ObservableTests : MonoBehaviour
                 if (_myProperty == value)
                     return;
                 _myProperty = value;
-                RaisePropertyChanged("MyProperty");
+                RaiseChange("MyProperty", value);
             }
         }
 
@@ -48,15 +48,7 @@ public class ObservableTests : MonoBehaviour
         }
 
     }
-
-    public class ViewModel2 : ObservableObject
-    {
-        public Observable<int> MyObservable;
-        public ViewModel2()
-        {
-            MyObservable = new Observable<int>("MyObservable", this);
-        }
-    }
+    
 
     void Start()
     {
@@ -69,9 +61,10 @@ public class ObservableTests : MonoBehaviour
         var vm = new ViewModel();
         int counter = 0;
 
-        vm.OnPropertyChanged += (name) =>
+        vm.OnPublish += (name) =>
         {
-            Assert.AreEqual(name, "MyProperty");
+            Assert.AreEqual(name.Name, "MyProperty");
+            Assert.AreEqual(name.Sender, vm);
             counter++;
         };
 
@@ -87,28 +80,6 @@ public class ObservableTests : MonoBehaviour
         Assert.AreEqual(counter, 3);
     }
 
-    [TestMethod]
-    public void TestObservable()
-    {
-        var vm = new Observable<int>();
-        int counter = 0;
-
-        vm.OnValueChange += (v) =>
-        {
-            counter++;
-        };
-
-        vm.Value++;
-        Assert.AreEqual(vm.Value, 1);
-
-        vm.Value--;
-        Assert.AreEqual(vm.Value, 0);
-
-        vm.Value++;
-        Assert.AreEqual(vm.Value, 1);
-
-        Assert.AreEqual(counter, 3);
-    }
 
     [TestMethod]
     public void TestObservableProxy()
@@ -118,12 +89,12 @@ public class ObservableTests : MonoBehaviour
         int counter2 = 0;
         int counter1 = 0;
 
-        vm.OnPropertyChanged += (name) =>
+        vm.OnPublish += (e) =>
         {
             counter1++;
         };
 
-        proxy.OnPropertyChanged += (name) =>
+        proxy.OnPublish += (e) =>
         {
             counter2++;
         };
@@ -140,35 +111,10 @@ public class ObservableTests : MonoBehaviour
         Assert.AreEqual(counter1, 3);
         Assert.AreEqual(counter2, 3);
 
-
-        proxy.Post("MyObservable", 3);
-        Assert.AreEqual(proxy.Get<int>("MyObservable"), 3);
-        Assert.AreEqual(counter2, 4);
-
         proxy.Dispose();
-
-        vm.MyObservable.Value = 0;
-        Assert.AreEqual(counter2, 4);
     }
 
 
-    [TestMethod]
-    public void TestObservableParenting()
-    {
-        var vm = new ViewModel2();
-        int counter1 = 0;
-
-        vm.OnPropertyChanged += (name) =>
-        {
-            counter1++;
-        };
-
-
-        vm.MyObservable.Value = 5;
-
-        Assert.AreEqual(vm.MyObservable, 5);
-        Assert.AreEqual(counter1, 1);
-    }
     [TestMethod]
     public void TestConversion()
     {
@@ -177,12 +123,12 @@ public class ObservableTests : MonoBehaviour
         int counter2 = 0;
         int counter1 = 0;
 
-        vm.OnPropertyChanged += (name) =>
+        vm.OnPublish += (e) =>
         {
             counter1++;
         };
 
-        proxy.OnPropertyChanged += (name) =>
+        proxy.OnPublish += (e) =>
         {
             counter2++;
         };
@@ -205,6 +151,132 @@ public class ObservableTests : MonoBehaviour
         Assert.AreEqual(temp, 1);
 
         proxy.Dispose();
+    }
+
+    [TestMethod]
+    public void TestObservable()
+    {
+        var vm = new ObservableProperty<int>();
+
+        vm.Value = 10;
+
+        int counter = 0;
+
+        vm.OnPublish += (v) =>
+        {
+            if (counter == 0)
+                Assert.AreEqual(10, v);
+            counter++;
+        };
+
+        vm.Value = 0;
+
+        vm.Value++;
+        Assert.AreEqual(vm.Value, 1);
+
+        vm.Value--;
+        Assert.AreEqual(vm.Value, 0);
+
+        vm.Value++;
+        Assert.AreEqual(vm.Value, 1);
+
+        Assert.AreEqual(counter, 5);
+    }
+
+    [TestMethod]
+    public void TestList()
+    {
+        var vm = new ObservableList<string>();
+        var v = new List<string>();
+
+        Action test = () =>
+        {
+            Assert.IsTrue(v.Count == vm.Count);
+            for (int i = 0; i < v.Count; i++)
+            {
+                Assert.IsTrue(v[i] == vm[i]);
+            }
+        };
+
+        vm.OnPublish += (args) =>
+        {
+            switch (args.Event)
+            {
+                case ListChangedEventType.Add:
+                    {
+                        foreach (var item in args.Items)
+                        {
+                            v.Add(item as string);
+                        }
+                    }
+                    break;
+                case ListChangedEventType.Remove:
+                    {
+                        foreach (var item in args.Items)
+                        {
+                            v.Remove(item as string);
+                        }
+                    }
+                    break;
+                case ListChangedEventType.Replace:
+                    {
+                        var index = v.IndexOf(args.Items.ElementAt(0) as string);
+                        if (index >= 0)
+                        {
+                            v[index] = args.Items.ElementAt(0) as string;
+                        }
+                    }
+                    break;
+                case ListChangedEventType.Insert:
+                    {
+                        for (int j = 0; j < args.Items.Count(); j++)
+                        {
+                            v.Insert(j + args.Index, args.Items.ElementAt(j) as string);
+                        }
+                    }
+                    break;
+                case ListChangedEventType.Clear:
+                    {
+                        v.Clear();
+                    }
+                    break;
+                case ListChangedEventType.Refresh:
+                    {
+                        //Nothing, flicker UI
+                    }
+                    break;
+            }
+
+            test();
+        };
+
+
+        vm.Add("0");
+
+        for (int i = 1; i < 100; i++)
+        {
+            vm.Add(i.ToString());
+        }
+
+
+        for (int i = 1; i < 10; i++)
+        {
+            vm.Remove((i + 10).ToString());
+        }
+
+        vm.AddRange(new[] { "11", "12", "13" });
+
+        vm.RemoveRange(new[] { "11", "12", "13" });
+
+        vm.Replace("99");
+
+        vm.Insert(3, "199");
+
+        var h = vm.IndexOf("21");
+        vm[h] = "21";
+
+        vm.Clear();
+
     }
 
     [TestMethod]

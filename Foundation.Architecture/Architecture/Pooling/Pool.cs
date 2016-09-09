@@ -13,6 +13,11 @@ namespace Foundation.Architecture
     /// <typeparam name="T"></typeparam>
     public class Pool<T> where T : new()
     {
+        /// <summary>
+        /// Global Singleton
+        /// </summary>
+        public static readonly Pool<T> Default = new Pool<T>();
+
         private readonly Stack<T> _items = new Stack<T>();
 
         /// <summary>

@@ -10,69 +10,15 @@ namespace Foundation.Architecture
     /// <summary>
     /// Reflection Proxy. Wraps around an object and caches all reflection calls for a ~300% improvement.
     /// </summary>
-    public class ObservableProxy : IPropertyChanged, IDisposable
+    public class ObservableProxy : IObservable<PropertyEvent>
     {
-        public struct DelegateInfo
-        {
-            public Delegate Delegate;
-            public Type Type;
-
-            public DelegateInfo(Delegate d, Type t)
-            {
-                Delegate = d;
-                Type = t;
-            }
-        }
-
+        #region Api
 
         public object Instance { get; private set; }
         public Type InstanceType { get; private set; }
 
-        public event PropertyChanged OnPropertyChanged = delegate { };
-
-
-        //
-
-        private Dictionary<string, DelegateInfo> _cacheGet = new Dictionary<string, DelegateInfo>();
-        private Dictionary<string, DelegateInfo> _cacheSet = new Dictionary<string, DelegateInfo>();
-        private Dictionary<object, DelegateInfo> _cacheObs = new Dictionary<object, DelegateInfo>();
-
-        //
-
-        public ObservableProxy(object instance)
-        {
-            Instance = instance;
-
-            if (Instance is IPropertyChanged)
-            {
-                ((IPropertyChanged)Instance).OnPropertyChanged += RaisePropertyChanged;
-            }
-
-            BuildCache();
-        }
-
-        //
-
-        public void Dispose()
-        {
-            if (Instance is IPropertyChanged)
-            {
-                ((IPropertyChanged)Instance).OnPropertyChanged -= RaisePropertyChanged;
-            }
-            Instance = null;
-
-
-            foreach (var cacheOb in _cacheObs)
-            {
-                var einfo = cacheOb.Key.GetType().GetEvent("OnChange");
-                einfo.RemoveEventHandler(cacheOb.Key, cacheOb.Value.Delegate);
-            }
-
-            _cacheGet.Clear();
-            _cacheSet.Clear();
-            _cacheObs.Clear();
-        }
-
+        Dictionary<string, List<Action<PropertyEvent>>> Handlers = new Dictionary<string, List<Action<PropertyEvent>>>();
+      
         /// <summary>
         /// Call a member
         /// </summary>
@@ -129,17 +75,98 @@ namespace Foundation.Architecture
             }
         }
 
+        /// <summary>
+        /// Member specific listener
+        /// </summary>
+        public void Subscribe(string memberName, Action<PropertyEvent> handler)
+        {
+            List<Action<PropertyEvent>> events;
 
-        // 
+            if (!Handlers.TryGetValue(memberName, out events))
+            {
+                events = new List<Action<PropertyEvent>>();
+                Handlers.Add(memberName, events);
+            }
 
+            events.Add(handler);
+        }
+
+        /// <summary>
+        /// Member specific listener
+        /// </summary>
+        public void Unsubscribe(string memberName, Action<PropertyEvent> handler)
+        {
+            List<Action<PropertyEvent>> events;
+
+            if (Handlers.TryGetValue(memberName, out events))
+            {
+                events = new List<Action<PropertyEvent>>();
+                events.Remove(handler);
+            }
+        }
+
+        public ObservableProxy(object instance)
+        {
+            Instance = instance;
+
+            if (Instance is IObservable<PropertyEvent>)
+            {
+                ((IObservable<PropertyEvent>)Instance).OnPublish += Publish;
+            }
+
+            BuildCache();
+        }
+
+        public void Dispose()
+        {
+            if (Instance is IObservable<PropertyEvent>)
+            {
+                ((IObservable<PropertyEvent>)Instance).OnPublish -= Publish;
+            }
+
+            Instance = null;
+
+            Handlers.Clear();
+            _cacheGet.Clear();
+            _cacheSet.Clear();
+        }
 
         object Convert(object value, Type type)
         {
-            if (type == null || value == null  || value.GetType() == type)
+            if (type == null || value == null || value.GetType() == type)
                 return value;
 
             return System.Convert.ChangeType(value, type);
         }
+        #endregion
+
+        #region IObservable
+
+        public event Action<PropertyEvent> OnPublish = delegate { };
+
+        public void Publish(PropertyEvent model)
+        {
+            OnPublish(model);
+        }
+        
+        #endregion
+
+        #region Caching
+
+        struct DelegateInfo
+        {
+            public Delegate Delegate;
+            public Type Type;
+
+            public DelegateInfo(Delegate d, Type t)
+            {
+                Delegate = d;
+                Type = t;
+            }
+        }
+
+        private Dictionary<string, DelegateInfo> _cacheGet = new Dictionary<string, DelegateInfo>();
+        private Dictionary<string, DelegateInfo> _cacheSet = new Dictionary<string, DelegateInfo>();
 
         void BuildCache()
         {
@@ -148,7 +175,6 @@ namespace Foundation.Architecture
             //Methods
             CacheMethods();
             CacheProperties();
-            CacheObservables();
         }
 
         void CacheMethods()
@@ -207,44 +233,6 @@ namespace Foundation.Architecture
             }
         }
 
-        void CacheObservables()
-        {
-            var members = InstanceType.GetFields(BindingFlags.Public | BindingFlags.Instance)
-                .Where(o => o.FieldType.GetGenericTypeDefinition() == typeof(Observable<>))
-                .ToArray();
-
-            foreach (var member in members)
-            {
-                if (_cacheSet.ContainsKey(member.Name) || _cacheSet.ContainsKey(member.Name))
-                {
-                    LogService.LogWarning("Duplicate member " + member.Name + " on " + InstanceType.Name);
-
-                    continue;
-                }
-
-                var obs = member.GetValue(Instance);
-                var otype = member.FieldType.GetGenericArguments()[0];
-
-                var gtype = typeof(Func<>).MakeGenericType(otype);
-                var get = CreateDelegate(gtype, obs, obs.GetType().GetMethod("Get"));
-                _cacheGet.Add(member.Name, new DelegateInfo(get, otype));
-
-                var stype = typeof(Action<>).MakeGenericType(otype);
-                var set = CreateDelegate(stype, obs, obs.GetType().GetMethod("Set"));
-                _cacheSet.Add(member.Name, new DelegateInfo(set, otype));
-
-                var einfo = obs.GetType().GetEvent("OnChange");
-
-                Action handler = () =>
-                {
-                    RaisePropertyChanged(member.Name);
-                };
-
-                einfo.AddEventHandler(obs, handler);
-                _cacheObs.Add(obs, new DelegateInfo(handler, otype));
-            }
-        }
-
         Delegate CreateDelegate(Type type, Object target, MethodInfo method)
         {
 #if CORE
@@ -253,10 +241,6 @@ namespace Foundation.Architecture
             return Delegate.CreateDelegate(type, target, method);
 #endif
         }
-
-        public void RaisePropertyChanged(string memberName)
-        {
-            OnPropertyChanged(memberName);
-        }
+        #endregion
     }
 }

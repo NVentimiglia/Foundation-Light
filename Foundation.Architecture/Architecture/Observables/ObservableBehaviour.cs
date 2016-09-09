@@ -1,6 +1,7 @@
 #if UNITY
 // Nicholas Ventimiglia 2016-09-05
 
+using System;
 using UnityEngine;
 
 namespace Foundation.Architecture
@@ -8,13 +9,41 @@ namespace Foundation.Architecture
     /// <summary>
     /// Implements IPropertyChanged for MonoBehaviour
     /// </summary>
-    public class ObservableBehaviour : MonoBehaviour, IPropertyChanged
+    public class ObservableBehaviour : MonoBehaviour, IObservable<PropertyEvent>
     {
-        public event PropertyChanged OnPropertyChanged = delegate { };
+        /// <summary>
+        /// Listeners
+        /// </summary>
+        public event Action<PropertyEvent> OnPublish = delegate { };
 
-        public virtual void RaisePropertyChanged(string propertyName)
+        /// <summary>
+        /// Raise Change
+        /// </summary>
+        /// <param name="model"></param>
+        public void Publish(PropertyEvent model)
         {
-            OnPropertyChanged(propertyName);
+            OnPublish(model);
+        }
+
+        /// <summary>
+        /// Raise Change on a single property
+        /// </summary>
+        public void RaiseChange<T>(string memberName, T value)
+        {
+            OnPublish(new PropertyEvent { Sender = this, Name = memberName, Value = value });
+        }
+
+        /// <summary>
+        /// Raise Change All
+        /// </summary>
+        public void RaiseChange()
+        {
+            OnPublish(new PropertyEvent { Sender = this });
+        }
+
+        public void Dispose()
+        {
+            OnPublish = delegate { };
         }
     }
 }
