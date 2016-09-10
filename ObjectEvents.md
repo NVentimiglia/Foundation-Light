@@ -2,8 +2,6 @@
 
 A object-specific message broker for relaying events routed by the message type. This is a drop-in replacement for GameObject.SendMessage
 
-This implementation makes use of static generics. This alows us to not use reflection. At compile time a new class for each use by the compiler. On IOS and other older AOT platforms this can cause error of 'not enough trampolines', which can be fixed by config setting.
-
 ## Use
 
 `````
