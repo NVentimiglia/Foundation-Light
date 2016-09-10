@@ -2,7 +2,7 @@
 
 A global message broker for relaying events routed by the objects type. This pub sub service is perfect for decoupling logical consumers from infrastructure.
 
-This implementation makes use of static generics. This alows us to not use reflection. At compile time a new class for each use by the compiler. On IOS and other older AOT platforms this can cause error of 'not enough trampolines', which can be fixed by config setting.
+This implementation makes use of static generics. This alows us to not use reflection. On IOS and other older AOT platforms this can cause error of 'not enough trampolines', which can be fixed by config setting.
 
 ## Use
 
