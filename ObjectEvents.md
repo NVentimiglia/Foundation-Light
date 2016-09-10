@@ -7,7 +7,7 @@ A object-specific message broker for relaying events routed by the message type.
 `````
         public void TestObjectRoute()
         {
-            //define out message, a class
+            //define our message, a class
             var msg = new Msg { Content = MagicString };
 
             //define our routes (strings or game objects or something else)
