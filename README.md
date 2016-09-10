@@ -14,7 +14,7 @@ A Framework level library for client / server development. Built with MSN best p
 
 [Object Events : Routed Message broker / SendMessage replacement](ObjectEvents.md) 
 
-[Observables : Databdingin and MVVM Support](Observable.md) 
+[Observables : Databinding and MVVM Support](Observable.md) 
 
 [Logging : Cross platform debug proxy](Logging.md) 
 
