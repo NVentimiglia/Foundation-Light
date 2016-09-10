@@ -90,7 +90,7 @@ Reflection is heavy and costly. This class makes it better. As a bonus, acts as 
  - Wraps observable's (all of the above) and exposes an easy to use interface that binders can listen to.
  - Heavily cached since reflection is expensive
  - Supports methods and properties
- - Supports Non-IPropertyChanged and simple DTO's. (Those objects will be not raise change events, however)
+ - Supports Observables and simple DTO's. (Those objects will be not raise change events, however)
  
 
 ## Metrics
