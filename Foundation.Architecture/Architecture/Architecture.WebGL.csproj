@@ -34,27 +34,20 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\packages\UnityEngine.dll</HintPath>
+      <HintPath>..\..\packages\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\BufferExt.cs" />
     <Compile Include="Data\BufferHelper.cs" />
     <Compile Include="Data\JsonHelper.cs" />
+    <Compile Include="Data\StructHelper.cs" />
     <Compile Include="Injector\InjectAttribute.cs" />
     <Compile Include="Injector\InjectService.cs" />
     <Compile Include="Logging\LogModel.cs" />
     <Compile Include="Logging\LogService.Unity3d.cs" />
     <Compile Include="Messaging\DomainEvents.cs" />
     <Compile Include="Messaging\ObjectEvents.cs" />
-    <Compile Include="Observables\IObservable.cs" />
-    <Compile Include="Observables\ListEvent.cs" />
-    <Compile Include="Observables\ObservableBehaviour.cs" />
-    <Compile Include="Observables\ObservableList.cs" />
-    <Compile Include="Observables\ObservableObject.cs" />
-    <Compile Include="Observables\ObservableProperty.cs" />
-    <Compile Include="Observables\ObservableProxy.cs" />
-    <Compile Include="Observables\PropertyEvent.cs" />
     <Compile Include="Pooling\Pool.cs" />
     <Compile Include="Pooling\ThreadSafePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,7 +58,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo f | xcopy "$(TargetDir)Foundation.Architecture.WebGL.dll" "$(SolutionDir)..\Foundation.Unity\Assets\Plugins\Foundation.Architecture.WebGL.dll"  /D /Y</PostBuildEvent>
+    <PostBuildEvent>echo f | xcopy "$(TargetDir)Foundation.Architecture.WebGL.dll" "$(SolutionDir)..\Foundation.Unity\Assets\Foundation\Plugins\Foundation.Architecture.WebGL.dll"  /D /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

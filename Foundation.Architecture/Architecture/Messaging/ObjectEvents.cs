@@ -118,7 +118,7 @@ namespace Foundation.Architecture
                 var pType = typeof(Action<object, object>);
 
 #if CORE
-                var func = info.GetMethod("Publish").CreateDelegate(pType, null);
+                var func = info.GetTypeInfo().GetMethod("Publish").CreateDelegate(pType, null);
 #else
                 var func = Delegate.CreateDelegate(pType, info, "Publish");
 #endif
